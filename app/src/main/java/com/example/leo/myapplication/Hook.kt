@@ -9,20 +9,13 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 
 class Hook : IXposedHookLoadPackage {
 
-    companion object {
-        const val TAG = "HOOK"
-        const val NOT_FOUND = "NOT FOUND"
-        private const val SELF_PACKAGE = "com.example.leo.myapplication"
-        private const val SELF_Activity = "$SELF_PACKAGE.MainActivity"
-    }
-
     override fun handleLoadPackage(lpparam: LoadPackageParam) {
-        Log.i(TAG, "packageName: ${lpparam.packageName}")
-        Log.i(TAG, "----")
+        Log.i(Const.TAG, "packageName: ${lpparam.packageName}")
+        Log.i(Const.TAG, "----")
 
-        if (lpparam.packageName == SELF_PACKAGE) {
+        if (lpparam.packageName == Const.SELF_PACKAGE) {
             XposedHelpers.findAndHookMethod(
-                    SELF_Activity,
+                    Const.SELF_Activity,
                     lpparam.classLoader,
                     "isModuleActive",
                     XC_MethodReplacement.returnConstant(true)
@@ -35,7 +28,7 @@ class Hook : IXposedHookLoadPackage {
                     lpparam.classLoader,
                     "getOrigApplicationContext",
                     Context::class.javaObjectType,
-                    Callback1()
+                    Callback1
             )
         }
     }
