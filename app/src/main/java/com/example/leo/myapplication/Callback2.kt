@@ -8,7 +8,8 @@ object Callback2 : XC_MethodHook() {
         if (param.args.isNotEmpty()) {
             Thread.dumpStack()
             Log.i(Const.TAG, param.method.toString())
-            Log.i(Const.TAG, param.args[0].toString())
+            param.args
+                    .forEach { Log.i(Const.TAG, it.toString()) }
             Log.i(Const.TAG, "----")
         }
     }
