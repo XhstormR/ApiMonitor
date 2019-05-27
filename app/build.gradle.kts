@@ -15,8 +15,17 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
+    signingConfigs {
+        register("release") {
+            storeFile = file("keystore/release.jks")
+            storePassword = "123456"
+            keyAlias = "release"
+            keyPassword = "123456"
+        }
+    }
     buildTypes {
         getByName("release") {
+            signingConfig = signingConfigs["release"]
             isMinifyEnabled = true
             isShrinkResources = true
         }
@@ -28,8 +37,7 @@ android {
 
 dependencies {
     compileOnly("de.robv.android.xposed:api:82")
-    compileOnly("de.robv.android.xposed:api:82:sources")
 
-    compileOnly("com.android.support:support-annotations:28.0.0")
+    compileOnly("androidx.annotation:annotation:1.0.2")
     implementation(kotlin("stdlib-jdk7", KotlinCompilerVersion.VERSION))
 }

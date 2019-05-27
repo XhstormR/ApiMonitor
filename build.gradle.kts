@@ -4,8 +4,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.3.1")
-        classpath(kotlin("gradle-plugin", version = "1.3.21"))
+        classpath("com.android.tools.build:gradle:3.4.1")
+        classpath(kotlin("gradle-plugin", version = "1.3.31"))
     }
 }
 
@@ -16,6 +16,13 @@ allprojects {
     }
 }
 
-tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
+tasks {
+    register<Delete>("clean") {
+        delete(rootProject.buildDir)
+    }
+
+    withType<Wrapper> {
+        gradleVersion = "5.4.1"
+        distributionType = Wrapper.DistributionType.ALL
+    }
 }
