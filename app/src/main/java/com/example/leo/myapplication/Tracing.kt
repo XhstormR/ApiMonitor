@@ -4,7 +4,7 @@ import android.util.Log
 import de.robv.android.xposed.XC_MethodHook
 import java.util.*
 
-object Callback2 : XC_MethodHook() {
+object Tracing : XC_MethodHook() {
     override fun beforeHookedMethod(param: MethodHookParam) {
         trace(param)
         val args = param.args?.let { Arrays.toString(it) } ?: "void"

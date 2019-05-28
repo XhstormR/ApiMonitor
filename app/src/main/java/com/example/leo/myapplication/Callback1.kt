@@ -17,7 +17,7 @@ object Callback1 : XC_MethodHook() {
                     "encrypt",
                     String::class.javaObjectType,
                     PublicKey::class.javaObjectType,
-                    Callback2
+                    Tracing
             )
         } catch (e: Throwable) {
             Log.i(Const.TAG, Const.NOT_FOUND)
@@ -29,7 +29,7 @@ object Callback1 : XC_MethodHook() {
                     classLoader,
                     "encrypt",
                     String::class.javaObjectType,
-                    Callback2
+                    Tracing
             )
         } catch (e: Throwable) {
             Log.i(Const.TAG, Const.NOT_FOUND)
