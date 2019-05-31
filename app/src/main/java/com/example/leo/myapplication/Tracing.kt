@@ -20,8 +20,7 @@ object Tracing : XC_MethodHook() {
     }
 
     private fun trace(param: MethodHookParam) {
-        Log.i(Const.TAG, "Stack trace:")
-        Exception().stackTrace.forEach { Log.i(Const.TAG, "\tat $it") }
+        Log.i(Const.TAG, "Stack trace:", Exception())
         Log.i(Const.TAG, param.method.toString())
     }
 }
