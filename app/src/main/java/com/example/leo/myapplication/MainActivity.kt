@@ -3,6 +3,7 @@ package com.example.leo.myapplication
 import android.app.Activity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.annotation.Keep
 
 class MainActivity : Activity() {
 
@@ -14,5 +15,6 @@ class MainActivity : Activity() {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
 
+    @Keep
     private fun isModuleActive() = false
 }

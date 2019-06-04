@@ -33,6 +33,11 @@ android {
     lintOptions {
         isCheckReleaseBuilds = false
     }
+    packagingOptions {
+        exclude("**/*.kotlin_module")
+        exclude("**/*.kotlin_metadata")
+        exclude("**/*.kotlin_builtins")
+    }
 }
 
 dependencies {
