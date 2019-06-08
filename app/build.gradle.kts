@@ -46,3 +46,13 @@ dependencies {
     compileOnly("androidx.annotation:annotation:1.0.2")
     implementation(kotlin("stdlib-jdk7", KotlinCompilerVersion.VERSION))
 }
+
+/*
+keytool -genkeypair -keystore release.jks -storepass 123456 -alias release -keyalg RSA -dname "cn=123" -validity 365
+
+keytool -exportcert -keystore release.jks -storepass 123456 -alias release -file release.cer -rfc
+
+keytool -printcert -file release.cer
+
+https://docs.oracle.com/en/java/javase/12/tools/keytool.html
+*/
