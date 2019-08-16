@@ -7,9 +7,9 @@ plugins {
 }
 
 android {
-    compileSdkVersion(28)
+    compileSdkVersion(29)
     defaultConfig {
-        targetSdkVersion(28)
+        targetSdkVersion(29)
         minSdkVersion(19)
         applicationId = "com.example.leo.myapplication"
         versionCode = 1
@@ -43,7 +43,7 @@ android {
 dependencies {
     compileOnly("de.robv.android.xposed:api:82")
 
-    compileOnly("androidx.annotation:annotation:1.0.2")
+    compileOnly("androidx.annotation:annotation:1.1.0")
     implementation(kotlin("stdlib-jdk7", KotlinCompilerVersion.VERSION))
 }
 

@@ -1,18 +1,18 @@
 buildscript {
     repositories {
         google()
-        jcenter()
+        maven("https://maven.aliyun.com/repository/jcenter")
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.4.1")
-        classpath(kotlin("gradle-plugin", version = "1.3.31"))
+        classpath("com.android.tools.build:gradle:3.4.2")
+        classpath(kotlin("gradle-plugin", version = "1.3.41"))
     }
 }
 
 allprojects {
     repositories {
         google()
-        jcenter()
+        maven("https://maven.aliyun.com/repository/jcenter")
     }
 }
 
@@ -22,7 +22,7 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "5.4.1"
+        gradleVersion = "5.6"
         distributionType = Wrapper.DistributionType.ALL
     }
 }
