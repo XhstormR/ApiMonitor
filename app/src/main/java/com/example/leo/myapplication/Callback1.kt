@@ -20,7 +20,7 @@ object Callback1 : XC_MethodHook() {
                     Tracing
             )
         } catch (e: Throwable) {
-            Log.i(Const.TAG, Const.NOT_FOUND)
+            Log.i(Const.TAG, e.message ?: Const.NOT_FOUND)
         }
 
         try {
@@ -32,7 +32,7 @@ object Callback1 : XC_MethodHook() {
                     Tracing
             )
         } catch (e: Throwable) {
-            Log.i(Const.TAG, Const.NOT_FOUND)
+            Log.i(Const.TAG, e.message ?: Const.NOT_FOUND)
         }
     }
 }
