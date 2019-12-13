@@ -4,6 +4,8 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("android.extensions")
+
+    id("org.jlleitschuh.gradle.ktlint") version "9.1.1"
 }
 
 android {
@@ -45,6 +47,8 @@ dependencies {
 
     compileOnly("androidx.annotation:annotation:1.1.0")
     implementation(kotlin("stdlib-jdk7", KotlinCompilerVersion.VERSION))
+
+    implementation("com.google.code.gson:gson:2.8.6")
 }
 
 /*
