@@ -13,6 +13,8 @@ import java.io.File
 @Keep
 class Hook : IXposedHookLoadPackage {
 
+    private lateinit var packageName: String
+
     override fun handleLoadPackage(lpparam: LoadPackageParam) {
         if (lpparam.appInfo == null ||
                 (lpparam.appInfo.flags and
@@ -27,20 +29,18 @@ class Hook : IXposedHookLoadPackage {
             )
         }
 
-        val instrumentationConfig = Gson()
-                .fromJson(File(Const.CONFIG_FILE).readText(), clazz<InstrumentationConfig>())
+        packageName = lpparam.packageName
 
-        if (lpparam.packageName == instrumentationConfig.packageName) {
-            Logger.PACKAGENAME = lpparam.packageName
+        val hookConfigs = Gson()
+                .fromJson(File(Const.CONFIG_FILE).readText(), clazz<Array<HookConfig>>())
 
-            instrumentationConfig.hookConfigs.forEach { hookConfig ->
-                runCatching {
-                    hook(hookConfig)
-                }.recoverCatching {
-                    hook(hookConfig, lpparam.classLoader)
-                }.onFailure {
-                    Logger.logError(it.message)
-                }
+        hookConfigs.forEach { hookConfig ->
+            runCatching {
+                hook(hookConfig)
+            }.recoverCatching {
+                hook(hookConfig, lpparam.classLoader)
+            }.onFailure {
+                Logger.logError(it.message)
             }
         }
     }
@@ -51,14 +51,15 @@ class Hook : IXposedHookLoadPackage {
 
     private fun hook(hookConfig: HookConfig, classLoader: ClassLoader) {
         val clazz = XposedHelpers.findClass(hookConfig.className, classLoader)
+        val tracing = Tracing(packageName)
 
         if (hookConfig.methodName != null) {
             clazz.declaredMethods
                     .filter { it.name == hookConfig.methodName }
-                    .forEach { XposedBridge.hookMethod(it, Tracing) }
+                    .forEach { XposedBridge.hookMethod(it, tracing) }
         } else {
             clazz.declaredConstructors
-                    .forEach { XposedBridge.hookMethod(it, Tracing) }
+                    .forEach { XposedBridge.hookMethod(it, tracing) }
         }
     }
 }

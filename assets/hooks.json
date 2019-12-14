@@ -1,0 +1,334 @@
+[
+  {
+    "className": "android.telephony.TelephonyManager",
+    "methodName": "getDeviceId"
+  },
+  {
+    "className": "android.telephony.TelephonyManager",
+    "methodName": "getSubscriberId"
+  },
+  {
+    "className": "android.telephony.TelephonyManager",
+    "methodName": "getLine1Number"
+  },
+  {
+    "className": "android.telephony.TelephonyManager",
+    "methodName": "getNetworkOperator"
+  },
+  {
+    "className": "android.telephony.TelephonyManager",
+    "methodName": "getNetworkOperatorName"
+  },
+  {
+    "className": "android.telephony.TelephonyManager",
+    "methodName": "getSimOperatorName"
+  },
+  {
+    "className": "android.net.wifi.WifiInfo",
+    "methodName": "getMacAddress"
+  },
+  {
+    "className": "android.telephony.TelephonyManager",
+    "methodName": "getSimCountryIso"
+  },
+  {
+    "className": "android.telephony.TelephonyManager",
+    "methodName": "getSimSerialNumber"
+  },
+  {
+    "className": "android.telephony.TelephonyManager",
+    "methodName": "getNetworkCountryIso"
+  },
+  {
+    "className": "android.telephony.TelephonyManager",
+    "methodName": "getDeviceSoftwareVersion"
+  },
+  {
+    "className": "android.os.Debug",
+    "methodName": "isDebuggerConnected"
+  },
+  {
+    "className": "android.app.SharedPreferencesImpl$EditorImpl",
+    "methodName": "putString"
+  },
+  {
+    "className": "android.app.SharedPreferencesImpl$EditorImpl",
+    "methodName": "putBoolean"
+  },
+  {
+    "className": "android.app.SharedPreferencesImpl$EditorImpl",
+    "methodName": "putInt"
+  },
+  {
+    "className": "android.app.SharedPreferencesImpl$EditorImpl",
+    "methodName": "putLong"
+  },
+  {
+    "className": "android.app.SharedPreferencesImpl$EditorImpl",
+    "methodName": "putFloat"
+  },
+  {
+    "className": "android.content.ContentValues",
+    "methodName": "put"
+  },
+  {
+    "className": "java.net.URL",
+    "methodName": "openConnection"
+  },
+  {
+    "className": "org.apache.http.impl.client.AbstractHttpClient",
+    "methodName": "execute"
+  },
+  {
+    "className": "android.app.ContextImpl",
+    "methodName": "registerReceiver"
+  },
+  {
+    "className": "android.app.ActivityThread",
+    "methodName": "handleReceiver"
+  },
+  {
+    "className": "android.app.Activity",
+    "methodName": "startActivity"
+  },
+  {
+    "className": "dalvik.system.BaseDexClassLoader",
+    "methodName": "findResource"
+  },
+  {
+    "className": "dalvik.system.BaseDexClassLoader",
+    "methodName": "findLibrary"
+  },
+  {
+    "className": "dalvik.system.DexFile",
+    "methodName": "loadDex"
+  },
+  {
+    "className": "dalvik.system.DexClassLoader",
+    "methodName": null
+  },
+  {
+    "className": "dalvik.system.DexClassLoader",
+    "methodName": "load"
+  },
+  {
+    "className": "dalvik.system.BaseDexClassLoader",
+    "methodName": "findResources"
+  },
+  {
+    "className": "dalvik.system.DexFile",
+    "methodName": "loadClass"
+  },
+  {
+    "className": "dalvik.system.DexFile",
+    "methodName": null
+  },
+  {
+    "className": "dalvik.system.PathClassLoader",
+    "methodName": null
+  },
+  {
+    "className": "javax.crypto.spec.SecretKeySpec",
+    "methodName": null
+  },
+  {
+    "className": "javax.crypto.Cipher",
+    "methodName": "doFinal"
+  },
+  {
+    "className": "javax.crypto.Mac",
+    "methodName": "doFinal"
+  },
+  {
+    "className": "android.app.ApplicationPackageManager",
+    "methodName": "setComponentEnabledSetting"
+  },
+  {
+    "className": "android.app.NotificationManager",
+    "methodName": "notify"
+  },
+  {
+    "className": "android.util.Base64",
+    "methodName": "decode"
+  },
+  {
+    "className": "android.telephony.TelephonyManager",
+    "methodName": "listen"
+  },
+  {
+    "className": "android.util.Base64",
+    "methodName": "encode"
+  },
+  {
+    "className": "android.util.Base64",
+    "methodName": "encodeToString"
+  },
+  {
+    "className": "android.net.ConnectivityManager",
+    "methodName": "setMobileDataEnabled"
+  },
+  {
+    "className": "android.content.BroadcastReceiver",
+    "methodName": "abortBroadcast"
+  },
+  {
+    "className": "android.telephony.SmsManager",
+    "methodName": "sendTextMessage"
+  },
+  {
+    "className": "android.telephony.SmsManager",
+    "methodName": "sendMultipartTextMessage"
+  },
+  {
+    "className": "java.lang.Runtime",
+    "methodName": "exec"
+  },
+  {
+    "className": "java.lang.ProcessBuilder",
+    "methodName": "start"
+  },
+  {
+    "className": "java.io.FileOutputStream",
+    "methodName": "write"
+  },
+  {
+    "className": "java.io.FileInputStream",
+    "methodName": "read"
+  },
+  {
+    "className": "android.app.ActivityManager",
+    "methodName": "killBackgroundProcesses"
+  },
+  {
+    "className": "android.os.Process",
+    "methodName": "killProcess"
+  },
+  {
+    "className": "android.content.ContentResolver",
+    "methodName": "query"
+  },
+  {
+    "className": "android.content.ContentResolver",
+    "methodName": "registerContentObserver"
+  },
+  {
+    "className": "android.content.ContentResolver",
+    "methodName": "insert"
+  },
+  {
+    "className": "android.accounts.AccountManager",
+    "methodName": "getAccountsByType"
+  },
+  {
+    "className": "android.accounts.AccountManager",
+    "methodName": "getAccounts"
+  },
+  {
+    "className": "android.location.Location",
+    "methodName": "getLatitude"
+  },
+  {
+    "className": "android.location.Location",
+    "methodName": "getLongitude"
+  },
+  {
+    "className": "android.content.ContentResolver",
+    "methodName": "delete"
+  },
+  {
+    "className": "android.media.AudioRecord",
+    "methodName": "startRecording"
+  },
+  {
+    "className": "android.media.MediaRecorder",
+    "methodName": "start"
+  },
+  {
+    "className": "android.os.SystemProperties",
+    "methodName": "get"
+  },
+  {
+    "className": "android.app.ApplicationPackageManager",
+    "methodName": "getInstalledPackages"
+  },
+  {
+    "className": "libcore.io.IoBridge",
+    "methodName": "open"
+  },
+  {
+    "className": "libcore.io.IoBridge",
+    "methodName": "close"
+  },
+  {
+    "className": "android.app.ActivityManager",
+    "methodName": "getRunningAppProcesses"
+  },
+  {
+    "className": "android.app.ActivityManager",
+    "methodName": "getRunningTasks"
+  },
+  {
+    "className": "dalvik.system.DexFile",
+    "methodName": "openDexFile"
+  },
+  {
+    "className": "java.lang.Runtime",
+    "methodName": "load"
+  },
+  {
+    "className": "android.os.Process",
+    "methodName": "start"
+  },
+  {
+    "className": "android.content.ContextWrapper",
+    "methodName": "startActivities"
+  },
+  {
+    "className": "android.content.ContextWrapper",
+    "methodName": "startService"
+  },
+  {
+    "className": "android.content.ContextWrapper",
+    "methodName": "startActivity"
+  },
+  {
+    "className": "android.content.ContextWrapper",
+    "methodName": "sendBroadcast"
+  },
+  {
+    "className": "java.net.ProxySelectorImpl",
+    "methodName": "select"
+  },
+  {
+    "className": "org.apache.http.impl.client.DefaultHttpClient",
+    "methodName": "switch_proxy"
+  },
+  {
+    "className": "android.webkit.WebView",
+    "methodName": "addJavascriptInterface"
+  },
+  {
+    "className": "android.webkit.WebView",
+    "methodName": "setWebChromeClient"
+  },
+  {
+    "className": "android.webkit.WebView",
+    "methodName": "setWebViewClient"
+  },
+  {
+    "className": "android.content.ContextWrapper",
+    "methodName": "openFileOutput"
+  },
+  {
+    "className": "android.app.AlarmManager",
+    "methodName": "setAlarmClock"
+  },
+  {
+    "className": "android.app.AlarmManager",
+    "methodName": "set"
+  },
+  {
+    "className": "java.io.File",
+    "methodName": "exists"
+  }
+]
