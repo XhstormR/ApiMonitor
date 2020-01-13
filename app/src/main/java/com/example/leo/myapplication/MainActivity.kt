@@ -13,6 +13,8 @@ class MainActivity : Activity() {
 
         val msg = if (isModuleActive()) "模块已启动" else "模块未启动"
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+
+//        Test.test(this)
     }
 
     @Keep

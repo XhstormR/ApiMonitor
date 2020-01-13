@@ -1,0 +1,81 @@
+package com.example.leo.myapplication.leak
+
+import android.telephony.SmsManager
+import android.telephony.TelephonyManager
+import android.util.Base64
+import com.example.leo.myapplication.HookConfig
+import com.example.leo.myapplication.net.MonitorOutputStream
+import com.example.leo.myapplication.util.clazz
+import com.example.leo.myapplication.util.contains
+import com.example.leo.myapplication.util.toHEX
+import de.robv.android.xposed.XC_MethodHook.MethodHookParam
+import java.io.FileOutputStream
+import java.util.concurrent.ConcurrentHashMap
+import javax.crypto.Cipher
+
+object LeakChecker {
+
+    private val sampleMap = ConcurrentHashMap<Type, MutableList<ByteArray>>()
+
+    init {
+        Type.values().forEach { sampleMap[it] = mutableListOf() }
+    }
+
+    fun addSample(type: Type, sample: Any) = when (sample) {
+        is String -> addSample(type, sample)
+        is ByteArray -> addSample(type, sample)
+        else -> throw IllegalArgumentException()
+    }
+
+    private fun addSample(type: Type, sample: String) {
+        addSample(type, sample.toByteArray())
+    }
+
+    private fun addSample(type: Type, sample: ByteArray) {
+        val hex = sample.toHEX().toByteArray()
+        val base64 = Base64.encode(sample, Base64.DEFAULT)
+        sampleMap[type]!!.addAll(listOf(sample, hex, base64))
+    }
+
+    fun install(hookConfigs: MutableSet<HookConfig>) {
+        hookConfigs.addAll(listOf(
+                HookConfig(clazz<Cipher>().name, "doFinal", CipherCheckHook),
+                HookConfig(clazz<TelephonyManager>().name, "getImei", TelephonyManagerCheckHook)
+        ))
+    }
+
+    fun check(type: Type, bytes: ByteArray) =
+            sampleMap[type]!!.any { bytes.contains(it) }
+
+    fun parseHook(param: MethodHookParam) = when {
+        param.thisObject is FileOutputStream && param.method.name == "write" && param.args[0] is ByteArray -> writeFile(param)
+        param.thisObject is MonitorOutputStream && param.method.name == "write" && param.args[0] is ByteArray -> writeNet(param)
+        param.thisObject is SmsManager && param.method.name == "sendDataMessage" -> sendDataSMS(param)
+        param.thisObject is SmsManager && param.method.name == "sendTextMessage" -> sendTextSMS(param)
+        else -> null
+    }
+
+    private fun sendTextSMS(param: MethodHookParam): String? {
+        val bytes = (param.args[2] as String).toByteArray()
+
+        return Type.values().firstOrNull { check(it, bytes) }?.let { "${it}_sms" }
+    }
+
+    private fun sendDataSMS(param: MethodHookParam): String? {
+        val bytes = param.args[3] as ByteArray
+
+        return Type.values().firstOrNull { check(it, bytes) }?.let { "${it}_sms" }
+    }
+
+    private fun writeNet(param: MethodHookParam): String? {
+        val bytes = param.args[0] as ByteArray
+
+        return Type.values().firstOrNull { check(it, bytes) }?.let { "${it}_net" }
+    }
+
+    private fun writeFile(param: MethodHookParam): String? {
+        val bytes = param.args[0] as ByteArray
+
+        return Type.values().firstOrNull { check(it, bytes) }?.let { "${it}_file" }
+    }
+}

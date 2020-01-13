@@ -1,5 +1,6 @@
 package com.example.leo.myapplication
 
+import com.example.leo.myapplication.leak.LeakChecker
 import de.robv.android.xposed.XC_MethodHook
 
 class Tracing(
@@ -12,6 +13,7 @@ class Tracing(
         map["args"] = ParseGenerator.parseObject(param.args)
         map["result"] = ParseGenerator.parseObject(param.result)
         map["this"] = ParseGenerator.parseObject(param.thisObject)
+        LeakChecker.parseHook(param)?.let { map["action"] = it }
         Logger.logHook(map)
     }
 }

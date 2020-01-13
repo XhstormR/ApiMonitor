@@ -12,7 +12,7 @@ android {
     compileSdkVersion(29)
     defaultConfig {
         targetSdkVersion(29)
-        minSdkVersion(19)
+        minSdkVersion(24)
         applicationId = "com.example.leo.myapplication"
         versionCode = 1
         versionName = "1.0"

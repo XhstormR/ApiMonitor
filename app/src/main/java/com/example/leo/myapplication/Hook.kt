@@ -2,6 +2,9 @@ package com.example.leo.myapplication
 
 import android.content.pm.ApplicationInfo
 import androidx.annotation.Keep
+import com.example.leo.myapplication.leak.LeakChecker
+import com.example.leo.myapplication.net.NetChecker
+import com.example.leo.myapplication.util.clazz
 import com.google.gson.Gson
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XC_MethodReplacement
@@ -32,13 +35,19 @@ class Hook : IXposedHookLoadPackage {
         packageName = lpparam.packageName
 
         val hookConfigs = Gson()
-                .fromJson(File(Const.CONFIG_FILE).readText(), clazz<Array<HookConfig>>())
+                .fromJson(File(Const.CONFIG_FILE).readText(), clazz<Array<HookConfig>>()).toMutableSet()
+
+        NetChecker.install(hookConfigs)
+
+        LeakChecker.install(hookConfigs)
 
         hookConfigs.forEach { hookConfig ->
             runCatching {
                 hook(hookConfig)
             }.recoverCatching {
                 hook(hookConfig, lpparam.classLoader)
+            }.recoverCatching {
+                hook(hookConfig, XposedBridge.BOOTCLASSLOADER)
             }.onFailure {
                 Logger.logError(it.message)
             }
@@ -46,12 +55,12 @@ class Hook : IXposedHookLoadPackage {
     }
 
     private fun hook(hookConfig: HookConfig) {
-        hook(hookConfig, XposedBridge.BOOTCLASSLOADER)
+        hook(hookConfig, clazz<Hook>().classLoader!!)
     }
 
     private fun hook(hookConfig: HookConfig, classLoader: ClassLoader) {
         val clazz = XposedHelpers.findClass(hookConfig.className, classLoader)
-        val tracing = Tracing(packageName)
+        val tracing = hookConfig.callback ?: Tracing(packageName)
 
         if (hookConfig.methodName != null) {
             clazz.declaredMethods

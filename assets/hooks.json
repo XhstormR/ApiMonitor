@@ -173,6 +173,10 @@
   },
   {
     "className": "android.telephony.SmsManager",
+    "methodName": "sendDataMessage"
+  },
+  {
+    "className": "android.telephony.SmsManager",
     "methodName": "sendTextMessage"
   },
   {
@@ -289,11 +293,19 @@
   },
   {
     "className": "android.content.ContextWrapper",
+    "methodName": "bindService"
+  },
+  {
+    "className": "android.content.ContextWrapper",
     "methodName": "startActivity"
   },
   {
     "className": "android.content.ContextWrapper",
     "methodName": "sendBroadcast"
+  },
+  {
+    "className": "android.content.ContextWrapper",
+    "methodName": "registerReceiver"
   },
   {
     "className": "java.net.ProxySelectorImpl",
@@ -330,5 +342,17 @@
   {
     "className": "java.io.File",
     "methodName": "exists"
+  },
+  {
+    "className": "java.net.Socket",
+    "methodName": "connect"
+  },
+  {
+    "className": "java.net.Socket",
+    "methodName": "close"
+  },
+  {
+    "className": "android.telecom.TelecomManager",
+    "methodName": "placeCall"
   }
 ]
