@@ -63,12 +63,9 @@ class Hook : IXposedHookLoadPackage {
         val tracing = hookConfig.callback ?: Tracing(packageName)
 
         if (hookConfig.methodName != null) {
-            clazz.declaredMethods
-                    .filter { it.name == hookConfig.methodName }
-                    .forEach { XposedBridge.hookMethod(it, tracing) }
+            XposedBridge.hookAllMethods(clazz, hookConfig.methodName, tracing)
         } else {
-            clazz.declaredConstructors
-                    .forEach { XposedBridge.hookMethod(it, tracing) }
+            XposedBridge.hookAllConstructors(clazz, tracing)
         }
     }
 }
