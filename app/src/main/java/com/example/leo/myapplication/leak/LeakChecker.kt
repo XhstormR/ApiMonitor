@@ -40,7 +40,9 @@ object LeakChecker {
     fun install(hookConfigs: MutableSet<HookConfig>) {
         hookConfigs.addAll(listOf(
                 HookConfig(clazz<Cipher>().name, "doFinal", CipherCheckHook),
-                HookConfig(clazz<TelephonyManager>().name, "getImei", TelephonyManagerCheckHook)
+                HookConfig(clazz<TelephonyManager>().name, "getImei", TelephonyManagerCheckHook),
+                HookConfig(clazz<TelephonyManager>().name, "getDeviceId", TelephonyManagerCheckHook),
+                HookConfig(clazz<TelephonyManager>().name, "getLine1Number", TelephonyManagerCheckHook)
         ))
     }
 
@@ -50,8 +52,8 @@ object LeakChecker {
     fun parseHook(param: MethodHookParam) = when {
         param.thisObject is FileOutputStream && param.method.name == "write" && param.args[0] is ByteArray -> writeFile(param)
         param.thisObject is MonitorOutputStream && param.method.name == "write" && param.args[0] is ByteArray -> writeNet(param)
-        param.thisObject is SmsManager && param.method.name == "sendDataMessage" -> sendDataSMS(param)
-        param.thisObject is SmsManager && param.method.name == "sendTextMessage" -> sendTextSMS(param)
+        param.thisObject is SmsManager && param.method.name == "sendTextMessage" && param.args[2] is String -> sendTextSMS(param)
+        param.thisObject is SmsManager && param.method.name == "sendDataMessage" && param.args[3] is ByteArray -> sendDataSMS(param)
         else -> null
     }
 

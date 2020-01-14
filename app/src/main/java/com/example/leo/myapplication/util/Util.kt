@@ -2,7 +2,8 @@ package com.example.leo.myapplication.util
 
 inline fun <reified T> clazz() = T::class.java
 
-fun ByteArray.toHEX() = joinToString("") { String.format("%02x", it) }
+fun ByteArray.toHEX() =
+        this.joinToString("") { String.format("%02x", it) }
 
 fun ByteArray.contains(bytes: ByteArray) =
         this.indexOf(bytes) != -1

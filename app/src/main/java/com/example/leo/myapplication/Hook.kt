@@ -35,7 +35,8 @@ class Hook : IXposedHookLoadPackage {
         packageName = lpparam.packageName
 
         val hookConfigs = Gson()
-                .fromJson(File(Const.CONFIG_FILE).readText(), clazz<Array<HookConfig>>()).toMutableSet()
+                .fromJson(File(Const.CONFIG_FILE).readText(), clazz<Array<HookConfig>>())
+                .toMutableSet()
 
         NetChecker.install(hookConfigs)
 
