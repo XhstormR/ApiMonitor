@@ -1,3 +1,4 @@
+import com.android.build.gradle.ProguardFiles.ProguardFile
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
@@ -28,6 +29,8 @@ android {
             signingConfig = signingConfigs["release"]
             isMinifyEnabled = true
             isShrinkResources = true
+            proguardFile(getDefaultProguardFile(ProguardFile.OPTIMIZE.fileName))
+            proguardFile("proguard-rules.pro")
         }
     }
     lintOptions {

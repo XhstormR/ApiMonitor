@@ -1,7 +1,6 @@
 package com.example.leo.myapplication
 
 import android.content.pm.ApplicationInfo
-import androidx.annotation.Keep
 import com.example.leo.myapplication.leak.LeakChecker
 import com.example.leo.myapplication.net.NetChecker
 import com.example.leo.myapplication.util.clazz
@@ -13,7 +12,6 @@ import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import java.io.File
 
-@Keep
 class Hook : IXposedHookLoadPackage {
 
     private lateinit var packageName: String
