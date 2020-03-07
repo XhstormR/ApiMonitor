@@ -4,8 +4,6 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("android.extensions")
-
-    id("org.jlleitschuh.gradle.ktlint") version "9.1.1"
 }
 
 android {
@@ -39,6 +37,7 @@ android {
         exclude("**/*.kotlin_module")
         exclude("**/*.kotlin_metadata")
         exclude("**/*.kotlin_builtins")
+        exclude("**/*.version")
     }
 }
 
