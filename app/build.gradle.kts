@@ -47,8 +47,8 @@ android {
 dependencies {
     compileOnly("de.robv.android.xposed:api:82")
 
-    compileOnly("androidx.annotation:annotation:1.1.0")
-    implementation(kotlin("stdlib-jdk7", KotlinCompilerVersion.VERSION))
+    implementation("androidx.preference:preference:1.1.0")
+    implementation(kotlin("stdlib-jdk8", KotlinCompilerVersion.VERSION))
 
     implementation("com.google.code.gson:gson:2.8.6")
 }

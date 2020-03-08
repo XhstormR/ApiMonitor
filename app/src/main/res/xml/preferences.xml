@@ -1,0 +1,7 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <SwitchPreferenceCompat
+        app:key="serviceSwitch"
+        app:title="启用" />
+
+</PreferenceScreen>

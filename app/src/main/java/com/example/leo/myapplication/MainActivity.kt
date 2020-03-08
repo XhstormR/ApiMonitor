@@ -1,22 +1,40 @@
 package com.example.leo.myapplication
 
-import android.app.Activity
+import android.content.pm.PackageManager
 import android.os.Bundle
-import android.widget.Toast
-import androidx.annotation.Keep
+import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.PreferenceManager
 
-class MainActivity : Activity() {
+class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         this.setContentView(R.layout.activity_main)
 
-        val msg = if (isModuleActive()) "模块已启动" else "模块未启动"
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val packageInfo = getPackageInfo()
+
+        if (preferences.getLong(Key.assetUpdateTime, -1) != packageInfo.lastUpdateTime) {
+            initConfig()
+            preferences.edit().putLong(Key.assetUpdateTime, packageInfo.lastUpdateTime).apply()
+        }
+
+        // val int1 = Intent()
+        // int1.setClassName(
+        //     "com.oneplus.security",
+        //     "com.oneplus.security.chainlaunch.view.ChainLaunchAppListActivity"
+        // )
+        // startActivity(int1)
 
 //        Test.test(this)
     }
 
-    @Keep
-    private fun isModuleActive() = false
+    private fun getPackageInfo() =
+        packageManager.getPackageInfo(packageName, PackageManager.GET_CONFIGURATIONS)
+
+    private fun initConfig() {
+        resources.openRawResource(R.raw.hooks).use { `in` ->
+            filesDir.resolve(Const.CONFIG_FILENAME).outputStream().use { out -> `in`.copyTo(out) }
+        }
+    }
 }

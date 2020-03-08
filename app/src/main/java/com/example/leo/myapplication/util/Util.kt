@@ -1,5 +1,8 @@
 package com.example.leo.myapplication.util
 
+import android.content.Context
+import de.robv.android.xposed.XposedHelpers
+
 inline fun <reified T> clazz() = T::class.java
 
 fun ByteArray.toHEX() =
@@ -19,3 +22,8 @@ fun ByteArray.indexOf(bytes: ByteArray): Int {
     }
     return -1
 }
+
+fun currentSystemContext() =
+    XposedHelpers.findClass("android.app.ActivityThread", null)
+        .let { XposedHelpers.callStaticMethod(it, "currentActivityThread") }
+        .let { XposedHelpers.callMethod(it, "getSystemContext") } as Context
