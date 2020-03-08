@@ -18,6 +18,9 @@ allprojects {
         google()
         maven("https://maven.aliyun.com/repository/jcenter")
     }
+    apply {
+        plugin("org.jlleitschuh.gradle.ktlint")
+    }
 }
 
 tasks {

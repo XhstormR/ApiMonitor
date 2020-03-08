@@ -7,6 +7,10 @@ plugins {
     kotlin("android.extensions")
 }
 
+ktlint {
+    android.set(true)
+}
+
 android {
     compileSdkVersion(29)
     defaultConfig {
