@@ -38,16 +38,18 @@ object LeakChecker {
     }
 
     fun install(hookConfigs: MutableSet<HookConfig>) {
-        hookConfigs.addAll(listOf(
+        hookConfigs.addAll(
+            listOf(
                 HookConfig(clazz<Cipher>().name, "doFinal", CipherCheckHook),
                 HookConfig(clazz<TelephonyManager>().name, "getImei", TelephonyManagerCheckHook),
                 HookConfig(clazz<TelephonyManager>().name, "getDeviceId", TelephonyManagerCheckHook),
                 HookConfig(clazz<TelephonyManager>().name, "getLine1Number", TelephonyManagerCheckHook)
-        ))
+            )
+        )
     }
 
     fun check(type: Type, bytes: ByteArray) =
-            sampleMap[type]!!.any { bytes.contains(it) }
+        sampleMap[type]!!.any { bytes.contains(it) }
 
     fun parseHook(param: MethodHookParam) = when {
         param.thisObject is FileOutputStream && param.method.name == "write" && param.args[0] is ByteArray -> writeFile(param)

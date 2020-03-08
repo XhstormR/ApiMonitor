@@ -16,7 +16,7 @@ class ByteArraySearcher(pattern_: ByteArray) {
     }
 
     fun contains(bytes: ByteArray) =
-            indexOf(bytes) != -1
+        indexOf(bytes) != -1
 
     fun indexOf(bytes: ByteArray): Int {
         var j = 0

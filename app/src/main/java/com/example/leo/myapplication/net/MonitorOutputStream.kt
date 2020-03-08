@@ -9,17 +9,17 @@ class MonitorOutputStream(
 ) : OutputStream() {
 
     override fun write(b: Int) =
-            delegate.write(b)
+        delegate.write(b)
 
     override fun write(b: ByteArray) =
-            delegate.write(b)
+        delegate.write(b)
 
     override fun write(b: ByteArray, off: Int, len: Int) =
-            delegate.write(b, off, len)
+        delegate.write(b, off, len)
 
     override fun flush() =
-            delegate.flush()
+        delegate.flush()
 
     override fun close() =
-            delegate.close()
+        delegate.close()
 }

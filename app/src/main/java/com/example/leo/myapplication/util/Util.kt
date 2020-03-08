@@ -6,10 +6,10 @@ import de.robv.android.xposed.XposedHelpers
 inline fun <reified T> clazz() = T::class.java
 
 fun ByteArray.toHEX() =
-        this.joinToString("") { String.format("%02x", it) }
+    this.joinToString("") { String.format("%02x", it) }
 
 fun ByteArray.contains(bytes: ByteArray) =
-        this.indexOf(bytes) != -1
+    this.indexOf(bytes) != -1
 
 // https://github.com/google/guava/blob/master/guava/src/com/google/common/primitives/Bytes.java#L111
 fun ByteArray.indexOf(bytes: ByteArray): Int {

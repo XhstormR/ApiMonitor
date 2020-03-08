@@ -10,9 +10,9 @@ object SocketOutputStreamHook : XC_MethodHook() {
         val socket = param.thisObject as Socket
 
         param.result = MonitorOutputStream(
-                socket.inetAddress.hostAddress,
-                socket.port,
-                param.result as OutputStream
+            socket.inetAddress.hostAddress,
+            socket.port,
+            param.result as OutputStream
         )
     }
 }

@@ -9,29 +9,29 @@ class MonitorInputStream(
 ) : InputStream() {
 
     override fun read() =
-            delegate.read()
+        delegate.read()
 
     override fun read(b: ByteArray) =
-            delegate.read(b)
+        delegate.read(b)
 
     override fun read(b: ByteArray, off: Int, len: Int) =
-            delegate.read(b, off, len)
+        delegate.read(b, off, len)
 
     override fun skip(n: Long) =
-            delegate.skip(n)
+        delegate.skip(n)
 
     override fun available() =
-            delegate.available()
+        delegate.available()
 
     override fun reset() =
-            delegate.reset()
+        delegate.reset()
 
     override fun close() =
-            delegate.close()
+        delegate.close()
 
     override fun mark(readlimit: Int) =
-            delegate.mark(readlimit)
+        delegate.mark(readlimit)
 
     override fun markSupported() =
-            delegate.markSupported()
+        delegate.markSupported()
 }

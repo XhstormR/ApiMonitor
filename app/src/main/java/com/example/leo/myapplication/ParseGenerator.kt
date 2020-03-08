@@ -21,10 +21,10 @@ import javax.crypto.Mac
 object ParseGenerator {
 
     fun parseHook(param: MethodHookParam) = mutableMapOf(
-            "class" to param.method.declaringClass.name,
-            "method" to param.method.name,
-            "action" to action(param),
-            "timestamp" to System.currentTimeMillis()
+        "class" to param.method.declaringClass.name,
+        "method" to param.method.name,
+        "action" to action(param),
+        "timestamp" to System.currentTimeMillis()
     )
 
     private fun action(param: MethodHookParam) = when {
@@ -85,8 +85,8 @@ object ParseGenerator {
         val inputStream = param.thisObject as FileInputStream
 
         val path = inputStream.javaClass.getDeclaredField("path")
-                .apply { isAccessible = true }
-                .get(inputStream)
+            .apply { isAccessible = true }
+            .get(inputStream)
 
         return "read_$path"
     }
@@ -95,8 +95,8 @@ object ParseGenerator {
         val outputStream = param.thisObject as FileOutputStream
 
         val path = outputStream.javaClass.getDeclaredField("path")
-                .apply { isAccessible = true }
-                .get(outputStream)
+            .apply { isAccessible = true }
+            .get(outputStream)
 
         return "write_$path"
     }

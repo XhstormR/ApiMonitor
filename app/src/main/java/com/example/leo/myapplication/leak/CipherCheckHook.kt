@@ -11,7 +11,7 @@ object CipherCheckHook : XC_MethodHook() {
         if (bytes !is ByteArray || result !is ByteArray) return
 
         Type.values()
-                .filter { LeakChecker.check(it, bytes) }
-                .forEach { LeakChecker.addSample(it, result) }
+            .filter { LeakChecker.check(it, bytes) }
+            .forEach { LeakChecker.addSample(it, result) }
     }
 }

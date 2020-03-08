@@ -10,9 +10,9 @@ object URLConnectionInputStreamHook : XC_MethodHook() {
         val urlConnection = param.thisObject as URLConnection
 
         param.result = MonitorInputStream(
-                urlConnection.url.host,
-                urlConnection.url.port,
-                param.result as InputStream
+            urlConnection.url.host,
+            urlConnection.url.port,
+            param.result as InputStream
         )
     }
 }
