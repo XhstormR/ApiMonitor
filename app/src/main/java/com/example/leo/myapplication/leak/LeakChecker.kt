@@ -11,14 +11,15 @@ import com.example.leo.myapplication.util.toHEX
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam
 import java.io.FileOutputStream
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 import javax.crypto.Cipher
 
 object LeakChecker {
 
-    private val sampleMap = ConcurrentHashMap<Type, MutableList<ByteArray>>()
+    private val sampleMap = ConcurrentHashMap<Type, CopyOnWriteArrayList<ByteArray>>()
 
     init {
-        Type.values().forEach { sampleMap[it] = mutableListOf() }
+        Type.values().forEach { sampleMap[it] = CopyOnWriteArrayList() }
     }
 
     fun addSample(type: Type, sample: Any) = when (sample) {

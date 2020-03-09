@@ -2,6 +2,7 @@ package com.example.leo.myapplication
 
 import android.app.AndroidAppHelper
 import android.content.ContentResolver
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.net.Uri
 import com.example.leo.myapplication.leak.LeakChecker
@@ -40,10 +41,24 @@ class Hook : IXposedHookLoadPackage {
             return
         }
 
-        if (!isExpModuleActive()) return
+        val moduleActive = runCatching {
+            isModuleActive()
+        }.recoverCatching {
+            startService()
+            isModuleActive()
+        }.getOrThrow()
+
+        if (!moduleActive) return
+
+        val config = runCatching {
+            getConfig()
+        }.recoverCatching {
+            startService()
+            getConfig()
+        }.getOrThrow()
 
         val hookConfigs = Gson()
-            .fromJson(getConfig(), clazz<Array<HookConfig>>())
+            .fromJson(config, clazz<Array<HookConfig>>())
             .toMutableSet()
 
         NetChecker.install(hookConfigs)
@@ -67,7 +82,7 @@ class Hook : IXposedHookLoadPackage {
         hook(hookConfig, clazz<Hook>().classLoader!!)
     }
 
-    private fun isExpModuleActive(): Boolean {
+    private fun isModuleActive(): Boolean {
         val result = currentSystemContext()
             .contentResolver.call(URI, Key.serviceSwitch, null, null)
 
@@ -79,6 +94,13 @@ class Hook : IXposedHookLoadPackage {
             .contentResolver.call(URI, Key.hooks, null, null)
 
         return result?.getString(Key.hooks) ?: ""
+    }
+
+    private fun startService() {
+        val intent = Intent(Const.ACTION_ACTIVE).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        currentSystemContext().startActivity(intent)
     }
 
     private fun hook(hookConfig: HookConfig, classLoader: ClassLoader) {

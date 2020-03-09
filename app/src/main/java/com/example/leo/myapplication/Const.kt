@@ -6,6 +6,8 @@ object Const {
 
     const val AUTHORITY = "$SELF_PACKAGE.CP"
 
+    const val ACTION_ACTIVE = "$SELF_PACKAGE.ACTION_ACTIVE"
+
     const val CONFIG_FILENAME = "hooks.json"
 
     const val LOGTAG = "ApiMonitor"

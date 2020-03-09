@@ -19,13 +19,6 @@ class MainActivity : AppCompatActivity() {
             preferences.edit().putLong(Key.assetUpdateTime, packageInfo.lastUpdateTime).apply()
         }
 
-        // val int1 = Intent()
-        // int1.setClassName(
-        //     "com.oneplus.security",
-        //     "com.oneplus.security.chainlaunch.view.ChainLaunchAppListActivity"
-        // )
-        // startActivity(int1)
-
 //        Test.test(this)
     }
 
