@@ -1,18 +1,18 @@
-package com.example.leo.myapplication.net
+package com.example.leo.myapplication.xposed.net
 
 import de.robv.android.xposed.XC_MethodHook
-import java.io.OutputStream
+import java.io.InputStream
 import java.net.Socket
 
-object SocketOutputStreamHook : XC_MethodHook() {
+object SocketInputStreamHook : XC_MethodHook() {
 
     override fun afterHookedMethod(param: MethodHookParam) {
         val socket = param.thisObject as Socket
 
-        param.result = MonitorOutputStream(
+        param.result = MonitorInputStream(
             socket.inetAddress.hostAddress,
             socket.port,
-            param.result as OutputStream
+            param.result as InputStream
         )
     }
 }

@@ -7,8 +7,8 @@
 
 -repackageclasses com.example.leo.myapplication
 
--keepclasseswithmembers class com.example.leo.myapplication.Hook
+-keepclasseswithmembers class com.example.leo.myapplication.xposed.Hook
 
--keepclassmembernames class com.example.leo.myapplication.HookConfig {
+-keepclassmembernames class com.example.leo.myapplication.xposed.HookConfig {
     <fields>;
 }

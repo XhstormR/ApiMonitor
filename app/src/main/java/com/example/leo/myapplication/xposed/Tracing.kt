@@ -1,6 +1,7 @@
-package com.example.leo.myapplication
+package com.example.leo.myapplication.xposed
 
-import com.example.leo.myapplication.leak.LeakChecker
+import com.example.leo.myapplication.util.Logger
+import com.example.leo.myapplication.xposed.leak.LeakChecker
 import de.robv.android.xposed.XC_MethodHook
 
 class Tracing(

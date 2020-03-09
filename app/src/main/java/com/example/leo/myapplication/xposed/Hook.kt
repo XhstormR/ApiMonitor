@@ -1,14 +1,12 @@
-package com.example.leo.myapplication
+package com.example.leo.myapplication.xposed
 
 import android.app.AndroidAppHelper
-import android.content.ContentResolver
-import android.content.Intent
 import android.content.pm.ApplicationInfo
-import android.net.Uri
-import com.example.leo.myapplication.leak.LeakChecker
-import com.example.leo.myapplication.net.NetChecker
+import com.example.leo.myapplication.Const
+import com.example.leo.myapplication.util.Logger
 import com.example.leo.myapplication.util.clazz
-import com.example.leo.myapplication.util.currentSystemContext
+import com.example.leo.myapplication.xposed.leak.LeakChecker
+import com.example.leo.myapplication.xposed.net.NetChecker
 import com.google.gson.Gson
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XC_MethodReplacement
@@ -17,13 +15,6 @@ import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 
 class Hook : IXposedHookLoadPackage {
-
-    companion object {
-        private val URI = Uri.Builder()
-            .scheme(ContentResolver.SCHEME_CONTENT)
-            .authority(Const.AUTHORITY)
-            .build()
-    }
 
     override fun handleLoadPackage(lpparam: LoadPackageParam) {
         if (lpparam.appInfo == null ||
@@ -41,21 +32,11 @@ class Hook : IXposedHookLoadPackage {
             return
         }
 
-        val moduleActive = runCatching {
-            isModuleActive()
-        }.recoverCatching {
-            startService()
-            isModuleActive()
-        }.getOrThrow()
+        val moduleActive = BackgroundService.isModuleActive()
 
         if (!moduleActive) return
 
-        val config = runCatching {
-            getConfig()
-        }.recoverCatching {
-            startService()
-            getConfig()
-        }.getOrThrow()
+        val config = BackgroundService.getConfig()
 
         val hookConfigs = Gson()
             .fromJson(config, clazz<Array<HookConfig>>())
@@ -80,27 +61,6 @@ class Hook : IXposedHookLoadPackage {
 
     private fun hook(hookConfig: HookConfig) {
         hook(hookConfig, clazz<Hook>().classLoader!!)
-    }
-
-    private fun isModuleActive(): Boolean {
-        val result = currentSystemContext()
-            .contentResolver.call(URI, Key.serviceSwitch, null, null)
-
-        return result?.getBoolean(Key.serviceSwitch) ?: false
-    }
-
-    private fun getConfig(): String {
-        val result = currentSystemContext()
-            .contentResolver.call(URI, Key.hooks, null, null)
-
-        return result?.getString(Key.hooks) ?: ""
-    }
-
-    private fun startService() {
-        val intent = Intent(Const.ACTION_ACTIVE).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-        currentSystemContext().startActivity(intent)
     }
 
     private fun hook(hookConfig: HookConfig, classLoader: ClassLoader) {

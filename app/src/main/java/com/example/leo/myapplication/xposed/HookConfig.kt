@@ -1,4 +1,4 @@
-package com.example.leo.myapplication
+package com.example.leo.myapplication.xposed
 
 import de.robv.android.xposed.XC_MethodHook
 

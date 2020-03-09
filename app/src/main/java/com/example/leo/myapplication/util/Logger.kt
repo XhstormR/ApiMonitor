@@ -1,6 +1,7 @@
-package com.example.leo.myapplication
+package com.example.leo.myapplication.util
 
 import android.util.Log
+import com.example.leo.myapplication.Const
 import org.json.JSONObject
 
 object Logger {

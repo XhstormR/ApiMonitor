@@ -1,13 +1,13 @@
-package com.example.leo.myapplication.leak
+package com.example.leo.myapplication.xposed.leak
 
 import android.telephony.SmsManager
 import android.telephony.TelephonyManager
 import android.util.Base64
-import com.example.leo.myapplication.HookConfig
-import com.example.leo.myapplication.net.MonitorOutputStream
 import com.example.leo.myapplication.util.clazz
 import com.example.leo.myapplication.util.contains
 import com.example.leo.myapplication.util.toHEX
+import com.example.leo.myapplication.xposed.HookConfig
+import com.example.leo.myapplication.xposed.net.MonitorOutputStream
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam
 import java.io.FileOutputStream
 import java.util.concurrent.ConcurrentHashMap

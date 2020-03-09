@@ -1,4 +1,4 @@
-package com.example.leo.myapplication
+package com.example.leo.myapplication.xposed
 
 import android.content.ContextWrapper
 import android.content.Intent
@@ -6,8 +6,8 @@ import android.content.IntentFilter
 import android.net.Uri
 import android.telecom.TelecomManager
 import android.telephony.SmsManager
-import com.example.leo.myapplication.net.MonitorInputStream
-import com.example.leo.myapplication.net.MonitorOutputStream
+import com.example.leo.myapplication.xposed.net.MonitorInputStream
+import com.example.leo.myapplication.xposed.net.MonitorOutputStream
 import dalvik.system.DexClassLoader
 import dalvik.system.PathClassLoader
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam

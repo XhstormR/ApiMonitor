@@ -1,18 +1,18 @@
-package com.example.leo.myapplication.net
+package com.example.leo.myapplication.xposed.net
 
 import de.robv.android.xposed.XC_MethodHook
-import java.io.InputStream
+import java.io.OutputStream
 import java.net.URLConnection
 
-object URLConnectionInputStreamHook : XC_MethodHook() {
+object URLConnectionOutputStreamHook : XC_MethodHook() {
 
     override fun afterHookedMethod(param: MethodHookParam) {
         val urlConnection = param.thisObject as URLConnection
 
-        param.result = MonitorInputStream(
+        param.result = MonitorOutputStream(
             urlConnection.url.host,
             urlConnection.url.port,
-            param.result as InputStream
+            param.result as OutputStream
         )
     }
 }

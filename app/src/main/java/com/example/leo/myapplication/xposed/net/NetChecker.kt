@@ -1,7 +1,7 @@
-package com.example.leo.myapplication.net
+package com.example.leo.myapplication.xposed.net
 
-import com.example.leo.myapplication.HookConfig
 import com.example.leo.myapplication.util.clazz
+import com.example.leo.myapplication.xposed.HookConfig
 import java.net.Socket
 
 object NetChecker {

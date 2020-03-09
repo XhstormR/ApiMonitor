@@ -25,6 +25,8 @@
 
         <activity
             android:name=".ActiveActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
             android:noHistory="true"
             android:theme="@android:style/Theme.Translucent">
             <intent-filter>
