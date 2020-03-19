@@ -200,6 +200,14 @@
     "methodName": "read"
   },
   {
+    "className": "java.io.FileOutputStream",
+    "methodName": "close"
+  },
+  {
+    "className": "java.io.FileInputStream",
+    "methodName": "close"
+  },
+  {
     "className": "android.app.ActivityManager",
     "methodName": "killBackgroundProcesses"
   },

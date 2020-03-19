@@ -34,6 +34,8 @@ object ParseGenerator {
         param.thisObject is Socket && param.method.name == "connect" -> connect(param)
         param.thisObject is FileInputStream && param.method.name == "read" -> readFile(param)
         param.thisObject is FileOutputStream && param.method.name == "write" -> writeFile(param)
+        param.thisObject is FileInputStream && param.method.name == "close" -> closeFile(param)
+        param.thisObject is FileOutputStream && param.method.name == "close" -> closeFile(param)
         param.thisObject is MonitorInputStream && param.method.name == "read" -> readNet(param)
         param.thisObject is MonitorOutputStream && param.method.name == "write" -> writeNet(param)
         param.thisObject is SmsManager && param.method.name == "sendDataMessage" -> sendSMS(param)
@@ -99,6 +101,12 @@ object ParseGenerator {
             .get(outputStream)
 
         return "write_$path"
+    }
+
+    private fun closeFile(param: MethodHookParam): String {
+        val path = XposedHelpers.getObjectField(param.thisObject, "path")
+
+        return "close_$path"
     }
 
     private fun readNet(param: MethodHookParam): String {

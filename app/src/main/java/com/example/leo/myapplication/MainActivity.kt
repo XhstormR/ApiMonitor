@@ -18,8 +18,6 @@ class MainActivity : AppCompatActivity() {
             initConfig()
             preferences.edit().putLong(Key.assetUpdateTime, packageInfo.lastUpdateTime).apply()
         }
-
-//        Test.test(this)
     }
 
     private fun getPackageInfo() =

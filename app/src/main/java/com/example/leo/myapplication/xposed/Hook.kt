@@ -5,6 +5,7 @@ import android.content.pm.ApplicationInfo
 import com.example.leo.myapplication.Const
 import com.example.leo.myapplication.util.Logger
 import com.example.leo.myapplication.util.clazz
+import com.example.leo.myapplication.xposed.dex.DexChecker
 import com.example.leo.myapplication.xposed.leak.LeakChecker
 import com.example.leo.myapplication.xposed.net.NetChecker
 import com.google.gson.Gson
@@ -22,6 +23,10 @@ class Hook : IXposedHookLoadPackage {
                 (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0
         ) return
 
+        if (lpparam.packageName == "com.topjohnwu.magisk" ||
+            lpparam.packageName == "de.robv.android.xposed.installer"
+        ) return
+
         if (lpparam.packageName == Const.SELF_PACKAGE) {
             XposedHelpers.findAndHookMethod(
                 Const.SELF_Fragment,
@@ -32,6 +37,8 @@ class Hook : IXposedHookLoadPackage {
             return
         }
 
+        // BackgroundService.revokePermission(AndroidAppHelper.currentPackageName())
+
         val moduleActive = BackgroundService.isModuleActive()
 
         if (!moduleActive) return
@@ -41,6 +48,8 @@ class Hook : IXposedHookLoadPackage {
         val hookConfigs = Gson()
             .fromJson(config, clazz<Array<HookConfig>>())
             .toMutableSet()
+
+        DexChecker.install(hookConfigs)
 
         NetChecker.install(hookConfigs)
 

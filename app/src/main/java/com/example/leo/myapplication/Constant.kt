@@ -14,6 +14,17 @@ object Const {
 }
 
 object Key {
+
+    const val uploadApk = "uploadApk"
+
+    const val uploadDex = "uploadDex"
+
+    const val uploadLog = "uploadLog"
+
+    const val revokePermission = "revokePermission"
+
+    const val cleanVirusPackage = "cleanVirusPackage"
+
     const val hooks = "hooks"
 
     const val serviceSwitch = "serviceSwitch"

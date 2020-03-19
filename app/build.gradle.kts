@@ -15,7 +15,7 @@ android {
     compileSdkVersion(29)
     defaultConfig {
         targetSdkVersion(29)
-        minSdkVersion(24)
+        minSdkVersion(25)
         applicationId = "com.example.leo.myapplication"
         versionCode = 1
         versionName = "1.0"
@@ -40,6 +40,10 @@ android {
     lintOptions {
         isCheckReleaseBuilds = false
     }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
     packagingOptions {
         exclude("**/*.kotlin_module")
         exclude("**/*.kotlin_metadata")
@@ -51,8 +55,13 @@ android {
 dependencies {
     compileOnly("de.robv.android.xposed:api:82")
 
-    implementation("androidx.preference:preference:1.1.0")
     implementation(kotlin("stdlib-jdk8", KotlinCompilerVersion.VERSION))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.4")
+
+    implementation("androidx.preference:preference:1.1.0")
+
+    implementation("com.squareup.retrofit2:retrofit:2.7.2")
+    implementation("com.squareup.retrofit2:converter-gson:2.7.2")
 
     implementation("com.google.code.gson:gson:2.8.6")
 }
