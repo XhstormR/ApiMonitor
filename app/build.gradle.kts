@@ -64,6 +64,8 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.7.2")
 
     implementation("com.google.code.gson:gson:2.8.6")
+
+    implementation("com.github.topjohnwu.libsu:core:2.5.1")
 }
 
 /*

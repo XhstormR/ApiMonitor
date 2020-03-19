@@ -1,17 +1,19 @@
 package com.example.leo.myapplication
 
-import com.example.leo.myapplication.model.parcel.ProcessResult
+import com.topjohnwu.superuser.Shell
 
 object ExecutorService {
 
-    private const val SU = "su -c %s"
+    init {
+        Shell.Config.setFlags(Shell.FLAG_REDIRECT_STDERR)
+        Shell.Config.verboseLogging(BuildConfig.DEBUG)
+        Shell.Config.setTimeout(10)
+    }
 
-    private const val PROCESS_LIST = "ps %s"
     private const val PROCESS_KILL = "kill -9 %s"
 
     private const val ACTIVITY_STOP = "am force-stop %s"
 
-    private const val PACKAGE_PATH = "pm path %s"
     private const val PACKAGE_REVOKE_PERMISSION = "pm revoke %s %s"
     private const val PACKAGE_INSTALL = "pm install -r %s"
     private const val PACKAGE_UNINSTALL = "pm uninstall %s"
@@ -21,22 +23,11 @@ object ExecutorService {
 
     private const val MONKEY_TEST = "monkey --kill-process-after-error --pct-touch 100 --throttle 500 -p %s 500"
 
-    private val processBuilder = ProcessBuilder()
-        .redirectErrorStream(true)
-
-    fun listProcess(pid: Int?) =
-        if (pid == null) execute(PROCESS_LIST)
-        else execute(PROCESS_LIST.format(pid))
-
     fun killProcess(pid: Int) =
         execute(PROCESS_KILL.format(pid))
 
     fun stopActivity(packageName: String) =
         execute(ACTIVITY_STOP.format(packageName))
-
-    fun pathPackage(packageName: String) =
-        execute(PACKAGE_PATH.format(packageName))
-            .let { it.copy(content = it.content.trim().removePrefix("package:")) }
 
     fun revokePackagePermission(packageName: String, permission: String) =
         execute(PACKAGE_REVOKE_PERMISSION.format(packageName, permission))
@@ -56,13 +47,6 @@ object ExecutorService {
     fun monkeyTest(packageName: String) =
         execute(MONKEY_TEST.format(packageName))
 
-    private fun execute(command: String): ProcessResult {
-        val process = SU.format(command).runCommand()
-        val exitValue = process.waitFor()
-        val content = process.inputStream.bufferedReader().use { it.readText() }
-        return ProcessResult(exitValue, content)
-    }
-
-    private fun String.runCommand() =
-        processBuilder.command(split(" ")).start()
+    private fun execute(command: String) =
+        Shell.su(command).exec()
 }

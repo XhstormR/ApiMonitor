@@ -17,6 +17,7 @@ allprojects {
     repositories {
         google()
         maven("https://maven.aliyun.com/repository/jcenter")
+        maven("https://jitpack.io")
     }
     apply {
         plugin("org.jlleitschuh.gradle.ktlint")

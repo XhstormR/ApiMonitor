@@ -3,9 +3,9 @@ package com.example.leo.myapplication.util
 import android.app.AndroidAppHelper
 import android.content.Context
 import de.robv.android.xposed.XposedHelpers
+import java.io.File
 import okio.HashingSink
 import okio.Okio
-import java.io.File
 
 inline fun <reified T> clazz() = T::class.java
 

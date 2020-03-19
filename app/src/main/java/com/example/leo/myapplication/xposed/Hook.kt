@@ -2,6 +2,7 @@ package com.example.leo.myapplication.xposed
 
 import android.app.AndroidAppHelper
 import android.content.pm.ApplicationInfo
+import com.example.leo.myapplication.BuildConfig
 import com.example.leo.myapplication.Const
 import com.example.leo.myapplication.util.Logger
 import com.example.leo.myapplication.util.clazz
@@ -27,7 +28,7 @@ class Hook : IXposedHookLoadPackage {
             lpparam.packageName == "de.robv.android.xposed.installer"
         ) return
 
-        if (lpparam.packageName == Const.SELF_PACKAGE) {
+        if (lpparam.packageName == BuildConfig.APPLICATION_ID) {
             XposedHelpers.findAndHookMethod(
                 Const.SELF_Fragment,
                 lpparam.classLoader,

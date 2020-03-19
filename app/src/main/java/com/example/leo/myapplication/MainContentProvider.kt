@@ -14,6 +14,9 @@ import com.example.leo.myapplication.model.parcel.DexPayload
 import com.example.leo.myapplication.model.parcel.VirusProcess
 import com.example.leo.myapplication.util.Logger
 import com.example.leo.myapplication.util.clazz
+import java.io.File
+import java.util.concurrent.TimeUnit
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -21,9 +24,6 @@ import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.io.File
-import java.util.concurrent.TimeUnit
-import kotlin.coroutines.CoroutineContext
 
 class MainContentProvider : ContentProvider(), CoroutineScope {
 
@@ -122,8 +122,8 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
 
     private fun getApkPackageName(path: String): String {
         val packageManager = context!!.packageManager
-        val packageArchiveInfo = packageManager.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES)!!
-        val applicationInfo = packageArchiveInfo.applicationInfo
+        val packageInfo = packageManager.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES)!!
+        val applicationInfo = packageInfo.applicationInfo
         return applicationInfo.packageName
     }
 
@@ -177,11 +177,11 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
         ExecutorService.stopActivity(packageName)
         ExecutorService.killProcess(pid)
 
-        val apkPath = ExecutorService.pathPackage(packageName).content
-        ExecutorService.backupFile(apkPath, backupDir.resolve("$packageName.apk").path)
+        val packageManager = context!!.packageManager
+        val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+        ExecutorService.backupFile(applicationInfo.sourceDir, backupDir.resolve("$packageName.apk").path)
 
-        val exitValue = ExecutorService.uninstallPackage(packageName).exitValue
-        return exitValue == 0
+        return ExecutorService.uninstallPackage(packageName).isSuccess
     }
 
     override fun query(
