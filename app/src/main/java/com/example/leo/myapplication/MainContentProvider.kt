@@ -20,6 +20,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -63,11 +64,9 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
     }
 
     override fun onCreate(): Boolean {
-        apkDir = File(context!!.applicationInfo.dataDir)
-            .resolve("apk").apply { mkdirs() }
-
-        backupDir = File(context!!.applicationInfo.dataDir)
-            .resolve("backup").apply { mkdirs() }
+        val dataDir = File(context!!.applicationInfo.dataDir)
+        apkDir = dataDir.resolve("apk").apply { mkdirs() }
+        backupDir = dataDir.resolve("backup").apply { mkdirs() }
 
         preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
@@ -82,10 +81,9 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
         val channel = produce(Dispatchers.IO) {
             while (true) {
                 delay(TimeUnit.SECONDS.toMillis(2))
-                Logger.logError("轮询开始")
                 runCatching {
                     val (sha256, status) = BackendService.getTask()
-                    Logger.logError("轮询成功$sha256")
+                    Logger.logError("轮询成功:$sha256")
                     val apkFile = apkDir.resolve("$sha256.apk")
                     BackendService.downloadApk(sha256).byteStream().use { `in` ->
                         apkFile.outputStream().use { out -> `in`.copyTo(out) }
@@ -94,14 +92,14 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
                     try {
                         ExecutorService.installPackage(apkFile.path)
                         Logger.logError(packageName)
-                        Logger.logError(ExecutorService.monkeyTest(packageName))
+                        ExecutorService.monkeyTest(packageName)
                         BackendService.finishTask(sha256)
                         count++
                     } finally {
                         send(packageName)
                     }
                 }.onFailure {
-                    Logger.logError("轮询失败" + it.message)
+                    Logger.logError("轮询失败:${it.message}")
                 }
             }
         }
@@ -113,9 +111,8 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
             }
         }
         launch(Dispatchers.IO) {
-            while (true) {
-                val packageName = channel.receive()
-                ExecutorService.uninstallPackage(packageName)
+            channel.consumeEach {
+                ExecutorService.uninstallPackage(it)
             }
         }
     }
@@ -147,7 +144,7 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
             val dexPayload = extras
                 .apply { classLoader = clazz<MainActivity>().classLoader }
                 .run { getParcelable<DexPayload>(Key.uploadDex) }!!
-            val uploadDex = runBlocking { BackendService.uploadDex(dexPayload) }
+            runBlocking { BackendService.uploadDex(dexPayload) }
             putBoolean(Key.uploadDex, true)
         }
         Key.revokePermission -> Bundle().apply {

@@ -110,7 +110,7 @@ object BackendService {
 
     private suspend fun <R> doResponseAction(action: suspend () -> Response<R>): R {
         val (code, message, result) = action()
-        if (code != 200) throw IllegalStateException(message)
+        check(code == 200) { message }
         return result
     }
 }

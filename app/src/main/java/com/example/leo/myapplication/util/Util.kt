@@ -4,7 +4,7 @@ import android.app.AndroidAppHelper
 import android.content.Context
 import de.robv.android.xposed.XposedHelpers
 import java.io.File
-import okio.HashingSink
+import okio.HashingSource
 import okio.Okio
 
 inline fun <reified T> clazz() = T::class.java
@@ -33,10 +33,9 @@ fun currentSystemContext() =
         .let { XposedHelpers.callMethod(it, "getSystemContext") } as Context
 
 fun currentApplicationHash(sourceApk: File = File(AndroidAppHelper.currentApplicationInfo().sourceDir)) =
-    HashingSink.sha256(Okio.blackhole()).use { sink ->
-        Okio.buffer(Okio.source(sourceApk)).use { source -> source.readAll(sink) }
-        sink.hash().hex()
-    }
+    HashingSource.sha256(Okio.source(sourceApk))
+        .apply { Okio.buffer(this).use { it.readAll(Okio.blackhole()) } }
+        .hash().hex()
 
 fun byte2Hex(bytes: ByteArray) = StringBuilder(bytes.size * 2)
     .apply {

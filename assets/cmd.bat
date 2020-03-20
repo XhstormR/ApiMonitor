@@ -21,3 +21,6 @@ adb shell dumpsys package packages
 adb shell dumpsys package de.robv.android.xposed.installer
 adb shell dumpsys activity -h
 adb shell dumpsys activity processes
+
+adb shell settings put global policy_control immersive.full=*
+adb shell settings put global policy_control null
