@@ -14,3 +14,7 @@
 -keepclassmembernames class com.example.leo.myapplication.xposed.HookConfig {
     <fields>;
 }
+
+-keepclassmembernames class com.example.leo.myapplication.model.response.* {
+    <fields>;
+}
