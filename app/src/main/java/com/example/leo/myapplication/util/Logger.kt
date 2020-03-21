@@ -9,6 +9,6 @@ object Logger {
     fun logHook(map: Map<String, Any>) =
         Log.i(Const.LOGTAG, JSONObject(map).toString())
 
-    fun logError(msg: Any?) =
-        Log.e(Const.LOGTAG, msg.toString())
+    fun logError(msg: Any?, tr: Throwable? = null) =
+        Log.e(Const.LOGTAG, msg.toString(), tr)
 }

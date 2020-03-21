@@ -63,26 +63,31 @@ object BackendService {
         ): Response<Int>
     }
 
+    private val httpClient = OkHttpClient.Builder()
+        .build()
+
     private val backend: Backend
 
-    private val websocket: WebSocket
+    private lateinit var websocket: WebSocket
 
     private val octet_stream = MediaType.get("application/octet-stream")
 
     init {
-        val httpClient = OkHttpClient.Builder()
-            .build()
         val retrofit = Retrofit.Builder()
             .client(httpClient)
             .baseUrl(Backend.API_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        val request = Request.Builder()
-            .url(Backend.WS_URL)
-            .build()
 
         backend = retrofit.create()
 
+        connectWebSocket()
+    }
+
+    fun connectWebSocket() {
+        val request = Request.Builder()
+            .url(Backend.WS_URL)
+            .build()
         websocket = httpClient.newWebSocket(request, WebSocketListener)
     }
 

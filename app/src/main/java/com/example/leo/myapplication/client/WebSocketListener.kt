@@ -13,7 +13,8 @@ object WebSocketListener : WebSocketListener() {
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-        Logger.logError("WebSocket onFailure:$response")
+        Logger.logError("WebSocket onFailure:$response", t)
+        BackendService.connectWebSocket()
     }
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
