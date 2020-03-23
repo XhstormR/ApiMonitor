@@ -4,6 +4,7 @@ import android.app.AndroidAppHelper
 import android.content.Context
 import de.robv.android.xposed.XposedHelpers
 import java.io.File
+import okio.GzipSink
 import okio.HashingSource
 import okio.Okio
 
@@ -44,3 +45,9 @@ fun byte2Hex(bytes: ByteArray) = StringBuilder(bytes.size * 2)
         }
     }
     .toString()
+
+fun gzip(input: File, output: File) {
+    Okio.buffer(Okio.source(input)).use { source ->
+        Okio.buffer(GzipSink(Okio.sink(output))).use { sink -> sink.writeAll(source) }
+    }
+}

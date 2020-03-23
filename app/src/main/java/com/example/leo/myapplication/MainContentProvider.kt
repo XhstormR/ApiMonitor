@@ -10,16 +10,19 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.preference.PreferenceManager
 import com.example.leo.myapplication.client.BackendService
+import com.example.leo.myapplication.model.LogPayload
 import com.example.leo.myapplication.model.parcel.DexPayload
 import com.example.leo.myapplication.model.parcel.VirusProcess
 import com.example.leo.myapplication.util.Logger
 import com.example.leo.myapplication.util.clazz
+import com.example.leo.myapplication.util.gzip
 import java.io.File
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.delay
@@ -33,6 +36,12 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
     private lateinit var apkDir: File
 
     private lateinit var backupDir: File
+
+    private lateinit var logFile: File
+
+    private lateinit var logGzFile: File
+
+    private val logChannel = Channel<String>(Channel.BUFFERED)
 
     private var job = Job()
 
@@ -67,6 +76,8 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
         val dataDir = File(context!!.applicationInfo.dataDir)
         apkDir = dataDir.resolve("apk").apply { mkdirs() }
         backupDir = dataDir.resolve("backup").apply { mkdirs() }
+        logFile = dataDir.resolve("trace.log")
+        logGzFile = dataDir.resolve("trace.log.gz")
 
         preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
@@ -88,18 +99,22 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
                     BackendService.downloadApk(sha256).byteStream().use { `in` ->
                         apkFile.outputStream().use { out -> `in`.copyTo(out) }
                     }
-                    val packageName = getApkPackageName(apkFile.path)
+                    var packageName: String? = null
                     try {
+                        logFile.delete()
+                        packageName = getApkPackageName(apkFile.path)
                         ExecutorService.installPackage(apkFile.path)
                         Logger.logError(packageName)
                         ExecutorService.monkeyTest(packageName)
-                        BackendService.finishTask(sha256)
                         count++
                     } finally {
-                        send(packageName)
+                        gzip(logFile, logGzFile)
+                        BackendService.uploadLog(LogPayload(sha256, logGzFile))
+                        BackendService.finishTask(sha256)
+                        send(packageName!!)
                     }
                 }.onFailure {
-                    Logger.logError("轮询失败:${it.message}")
+                    Logger.logError("轮询失败:${it.message}", it)
                 }
             }
         }
@@ -110,9 +125,16 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
                 Logger.logError("channelclose:${channel.isClosedForReceive},times:$count")
             }
         }
+
         launch(Dispatchers.IO) {
             channel.consumeEach {
                 ExecutorService.uninstallPackage(it)
+            }
+        }
+
+        launch(Dispatchers.IO) {
+            logChannel.consumeEach {
+                logFile.appendText(it + System.lineSeparator())
             }
         }
     }
@@ -155,7 +177,7 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
         Key.uploadLog -> Bundle().apply {
             extras ?: return Bundle.EMPTY
             val logPayload = extras.getString(Key.uploadLog)!!
-            putBoolean(Key.uploadLog, BackendService.send(logPayload))
+            putBoolean(Key.uploadLog, logChannel.offer(logPayload))
         }
         else -> Bundle.EMPTY
     }

@@ -1,15 +1,14 @@
 package com.example.leo.myapplication.client
 
+import com.example.leo.myapplication.model.LogPayload
 import com.example.leo.myapplication.model.parcel.DexPayload
 import com.example.leo.myapplication.model.response.Response
 import com.example.leo.myapplication.model.response.TaskResponse
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
-import okhttp3.WebSocket
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
@@ -26,8 +25,6 @@ object BackendService {
 
         companion object {
             const val API_URL = "http://192.168.2.128:1818"
-
-            const val WS_URL = "ws://192.168.2.128:1818/socket/server/123"
         }
 
         @GET("/anon/apk/task")
@@ -61,14 +58,19 @@ object BackendService {
             @Path("sha256") sha256: String,
             @Part file: MultipartBody.Part
         ): Response<Int>
+
+        @Multipart
+        @POST("/anon/log/{sha256}")
+        suspend fun uploadLog(
+            @Path("sha256") sha256: String,
+            @Part file: MultipartBody.Part
+        ): Response<Int>
     }
 
     private val httpClient = OkHttpClient.Builder()
         .build()
 
     private val backend: Backend
-
-    private lateinit var websocket: WebSocket
 
     private val octet_stream = MediaType.get("application/octet-stream")
 
@@ -80,18 +82,7 @@ object BackendService {
             .build()
 
         backend = retrofit.create()
-
-        connectWebSocket()
     }
-
-    fun connectWebSocket() {
-        val request = Request.Builder()
-            .url(Backend.WS_URL)
-            .build()
-        websocket = httpClient.newWebSocket(request, WebSocketListener)
-    }
-
-    fun send(text: String) = websocket.send(text)
 
     suspend fun downloadApk(sha256: String) =
         backend.downloadApk(sha256)
@@ -111,6 +102,15 @@ object BackendService {
             .let { MultipartBody.Part.createFormData("file", "${payload.size}.dex", it) }
 
         backend.uploadDex(apkHash, formData)
+    }
+
+    suspend fun uploadLog(logPayload: LogPayload) = doResponseAction {
+        val (apkHash, payload) = logPayload
+
+        val formData = RequestBody.create(octet_stream, payload)
+            .let { MultipartBody.Part.createFormData("file", "$apkHash.log", it) }
+
+        backend.uploadLog(apkHash, formData)
     }
 
     private suspend fun <R> doResponseAction(action: suspend () -> Response<R>): R {
