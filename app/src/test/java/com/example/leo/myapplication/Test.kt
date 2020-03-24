@@ -2,6 +2,11 @@ package com.example.leo.myapplication
 
 import com.example.leo.myapplication.util.ByteArraySearcher
 import com.example.leo.myapplication.util.indexOf
+import com.example.leo.myapplication.util.putIfAbsent
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * @author zhangzf
@@ -19,4 +24,20 @@ fun main() {
     println(s.indexOf(p3) == ByteArraySearcher(p3).indexOf(s))
     println(s.indexOf(p4) == ByteArraySearcher(p4).indexOf(s))
     println(s.indexOf(p5) == ByteArraySearcher(p5).indexOf(s))
+
+    val set = ConcurrentHashMap.newKeySet<Int>()
+    val int = AtomicInteger()
+    val executorService = Executors.newCachedThreadPool()
+    repeat(10) {
+        executorService.execute {
+            repeat(1000) {
+                if (set.putIfAbsent(it)) {
+                    int.getAndIncrement()
+                }
+            }
+        }
+    }
+    executorService.shutdown()
+    executorService.awaitTermination(1, TimeUnit.DAYS)
+    println(int.get() == 1000)
 }

@@ -4,6 +4,7 @@ import android.app.AndroidAppHelper
 import android.content.Context
 import de.robv.android.xposed.XposedHelpers
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 import okio.GzipSink
 import okio.HashingSource
 import okio.Okio
@@ -27,6 +28,9 @@ fun ByteArray.indexOf(bytes: ByteArray): Int {
     }
     return -1
 }
+
+fun <K, V> ConcurrentHashMap.KeySetView<K, V>.putIfAbsent(key: K) =
+    map.putIfAbsent(key, mappedValue) == null
 
 fun currentSystemContext() =
     XposedHelpers.findClass("android.app.ActivityThread", null)

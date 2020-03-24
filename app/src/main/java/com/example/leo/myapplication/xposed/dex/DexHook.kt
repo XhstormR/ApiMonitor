@@ -3,6 +3,7 @@ package com.example.leo.myapplication.xposed.dex
 import android.app.AndroidAppHelper
 import com.example.leo.myapplication.model.parcel.DexPayload
 import com.example.leo.myapplication.util.currentApplicationHash
+import com.example.leo.myapplication.util.putIfAbsent
 import com.example.leo.myapplication.xposed.BackgroundService
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedHelpers
@@ -22,8 +23,7 @@ object DexHook : XC_MethodHook() {
         val size = bytes.size
         val file = File(AndroidAppHelper.currentApplicationInfo().dataDir)
             .resolve("$size.dex")
-        if (size !in sizes) {
-            sizes.add(size)
+        if (sizes.putIfAbsent(size)) {
             BackgroundService.uploadDex(DexPayload(applicationHash, bytes))
         }
         // if (!file.exists()) {
