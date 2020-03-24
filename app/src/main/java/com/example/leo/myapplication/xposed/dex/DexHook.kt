@@ -7,11 +7,11 @@ import com.example.leo.myapplication.xposed.BackgroundService
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedHelpers
 import java.io.File
-import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.ConcurrentHashMap
 
 object DexHook : XC_MethodHook() {
 
-    private val sizes = CopyOnWriteArrayList<Int>()
+    private val sizes = ConcurrentHashMap.newKeySet<Int>()
 
     private val applicationHash = currentApplicationHash()
 
@@ -23,8 +23,8 @@ object DexHook : XC_MethodHook() {
         val file = File(AndroidAppHelper.currentApplicationInfo().dataDir)
             .resolve("$size.dex")
         if (size !in sizes) {
-            BackgroundService.uploadDex(DexPayload(applicationHash, bytes))
             sizes.add(size)
+            BackgroundService.uploadDex(DexPayload(applicationHash, bytes))
         }
         // if (!file.exists()) {
         //     file.writeBytes(bytes)

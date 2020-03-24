@@ -7,12 +7,13 @@ import java.net.URLConnection
 object URLConnectionInputStreamHook : XC_MethodHook() {
 
     override fun afterHookedMethod(param: MethodHookParam) {
+        val result = param.result as? InputStream ?: return
         val urlConnection = param.thisObject as URLConnection
 
         param.result = MonitorInputStream(
             urlConnection.url.host,
             urlConnection.url.port,
-            param.result as InputStream
+            result
         )
     }
 }

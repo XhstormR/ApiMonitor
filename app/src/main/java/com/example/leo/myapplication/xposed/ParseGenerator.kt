@@ -123,12 +123,14 @@ object ParseGenerator {
 
     private fun connect(param: MethodHookParam): String {
         val socket = param.thisObject as Socket
+        if (!socket.isConnected) return "open_unconnected"
 
         return "open_${socket.inetAddress.hostAddress}_${socket.port}"
     }
 
     private fun close(param: MethodHookParam): String {
         val socket = param.thisObject as Socket
+        if (!socket.isConnected) return "close_unconnected"
 
         return "close_${socket.inetAddress.hostAddress}_${socket.port}"
     }
