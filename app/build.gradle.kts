@@ -66,6 +66,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.6")
 
     implementation("com.github.topjohnwu.libsu:core:2.5.1")
+    implementation("com.github.topjohnwu.libsu:io:2.5.1")
 }
 
 /*

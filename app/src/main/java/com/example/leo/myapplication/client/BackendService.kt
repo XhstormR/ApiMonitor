@@ -4,6 +4,7 @@ import com.example.leo.myapplication.model.LogPayload
 import com.example.leo.myapplication.model.parcel.DexPayload
 import com.example.leo.myapplication.model.response.Response
 import com.example.leo.myapplication.model.response.TaskResponse
+import com.topjohnwu.superuser.io.SuFileInputStream
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
@@ -98,8 +99,9 @@ object BackendService {
     suspend fun uploadDex(dexPayload: DexPayload) = doResponseAction {
         val (apkHash, payload) = dexPayload
 
-        val formData = RequestBody.create(octet_stream, payload)
-            .let { MultipartBody.Part.createFormData("file", "${payload.size}.dex", it) }
+        val bytes = SuFileInputStream(payload).buffered().use { it.readBytes() }
+        val formData = RequestBody.create(octet_stream, bytes)
+            .let { MultipartBody.Part.createFormData("file", "${bytes.size}.dex", it) }
 
         backend.uploadDex(apkHash, formData)
     }

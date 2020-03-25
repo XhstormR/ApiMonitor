@@ -22,9 +22,11 @@ object DexHook : XC_MethodHook() {
             ?.let { XposedHelpers.callMethod(it, "getBytes") as ByteArray } ?: return
         val size = bytes.size
         val file = File(AndroidAppHelper.currentApplicationInfo().dataDir)
+            .resolve("dex").apply { mkdirs() }
             .resolve("$size.dex")
         if (sizes.putIfAbsent(size)) {
-            BackgroundService.uploadDex(DexPayload(applicationHash, bytes))
+            file.writeBytes(bytes)
+            BackgroundService.uploadDex(DexPayload(applicationHash, file))
         }
         // if (!file.exists()) {
         //     file.writeBytes(bytes)
