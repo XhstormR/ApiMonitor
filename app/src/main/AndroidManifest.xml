@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.leo.myapplication">
+    package="com.example.leo.monitor">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -8,7 +8,7 @@
 
     <application
         android:allowBackup="false"
-        android:label="My Application"
+        android:label="Api Monitor"
         android:theme="@style/AppTheme">
 
         <meta-data
@@ -34,7 +34,7 @@
             android:noHistory="true"
             android:theme="@android:style/Theme.Translucent">
             <intent-filter>
-                <action android:name="com.example.leo.myapplication.ACTION_ACTIVE" />
+                <action android:name="com.example.leo.monitor.ACTION_ACTIVE" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -42,7 +42,7 @@
 
         <provider
             android:name=".MainContentProvider"
-            android:authorities="com.example.leo.myapplication.CP"
+            android:authorities="com.example.leo.monitor.CP"
             android:exported="true" />
 
     </application>

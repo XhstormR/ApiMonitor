@@ -17,7 +17,7 @@ android {
     defaultConfig {
         targetSdkVersion(29)
         minSdkVersion(25)
-        applicationId = "com.example.leo.myapplication"
+        applicationId = "com.example.leo.monitor"
         versionCode = 1
         versionName = "1.0"
     }

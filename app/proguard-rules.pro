@@ -7,14 +7,14 @@
 -classobfuscationdictionary proguard-dict.txt
 -packageobfuscationdictionary proguard-dict.txt
 
--repackageclasses com.example.leo.myapplication
+-repackageclasses com.example.leo.monitor
 
--keepclasseswithmembers class com.example.leo.myapplication.xposed.Hook
+-keepclasseswithmembers class com.example.leo.monitor.xposed.Hook
 
--keepclassmembernames class com.example.leo.myapplication.xposed.HookConfig {
+-keepclassmembernames class com.example.leo.monitor.xposed.HookConfig {
     <fields>;
 }
 
--keepclassmembernames class com.example.leo.myapplication.model.response.* {
+-keepclassmembernames class com.example.leo.monitor.model.response.* {
     <fields>;
 }
