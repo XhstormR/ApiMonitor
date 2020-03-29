@@ -1,5 +1,6 @@
 import com.android.build.gradle.ProguardFiles.ProguardFile
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
+import java.util.Properties
 
 plugins {
     id("com.android.application")
@@ -21,11 +22,14 @@ android {
         versionName = "1.0"
     }
     signingConfigs {
+        val properties = Properties().apply {
+            file("keystore/keystore.properties").inputStream().use { this.load(it) }
+        }
         register("release") {
-            storeFile = file("keystore/release.jks")
-            storePassword = "123456"
-            keyAlias = "release"
-            keyPassword = "123456"
+            storeFile = file(properties.getProperty("storeFile"))
+            storePassword = properties.getProperty("storePassword")
+            keyAlias = properties.getProperty("keyAlias")
+            keyPassword = properties.getProperty("keyPassword")
         }
     }
     buildTypes {
