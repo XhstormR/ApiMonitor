@@ -12,19 +12,19 @@ class Tracing(
 ) : XC_MethodHook() {
 
     companion object {
-        private val applicationHash = currentApplicationHash()
+        private val appHash = currentApplicationHash()
     }
 
     override fun afterHookedMethod(param: MethodHookParam) {
         val map = ParseGenerator.parseHook(param)
         map["packageName"] = packageName
-        map["applicationHash"] = applicationHash
+        map["applicationHash"] = appHash
         map["args"] = ParseGenerator.parseObject(param.args)
         map["result"] = ParseGenerator.parseObject(param.result)
         map["this"] = ParseGenerator.parseObject(param.thisObject)
         LeakChecker.parseHook(param)?.let { map["action"] = it }
         val json = map.toJSONObject().toString()
         Logger.logHook(json)
-        BackgroundService.uploadLog(LogPayload(applicationHash, json))
+        BackgroundService.uploadLog(LogPayload(appHash, json))
     }
 }

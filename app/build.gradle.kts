@@ -1,6 +1,6 @@
 import com.android.build.gradle.ProguardFiles.ProguardFile
-import org.jetbrains.kotlin.config.KotlinCompilerVersion
 import java.util.Properties
+import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
     id("com.android.application")

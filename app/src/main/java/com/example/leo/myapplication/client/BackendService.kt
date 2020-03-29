@@ -32,18 +32,18 @@ object BackendService {
 
         @POST("/anon/apk/finished/{sha256}")
         suspend fun finishTask(
-            @Path("sha256") sha256: String
+            @Path("sha256") appHash: String
         ): Response<Int>
 
         @GET("/anon/apk/virusInfo/{sha256}")
         suspend fun getAppInfo(
-            @Path("sha256") sha256: String
+            @Path("sha256") appHash: String
         ): Response<TaskResponse>
 
         @Streaming
         @GET("/anon/apk/download/{sha256}")
         suspend fun downloadApk(
-            @Path("sha256") sha256: String
+            @Path("sha256") appHash: String
         ): ResponseBody
 
         @Multipart
@@ -55,14 +55,14 @@ object BackendService {
         @Multipart
         @POST("/anon/dex/{sha256}")
         suspend fun uploadDex(
-            @Path("sha256") sha256: String,
+            @Path("sha256") appHash: String,
             @Part file: MultipartBody.Part
         ): Response<Int>
 
         @Multipart
         @POST("/anon/log/{sha256}")
         suspend fun uploadLog(
-            @Path("sha256") sha256: String,
+            @Path("sha256") appHash: String,
             @Part file: MultipartBody.Part
         ): Response<Int>
     }
@@ -80,34 +80,34 @@ object BackendService {
         backend = retrofit.create()
     }
 
-    suspend fun downloadApk(sha256: String) =
-        backend.downloadApk(sha256)
+    suspend fun downloadApk(appHash: String) =
+        backend.downloadApk(appHash)
 
     suspend fun getTask() = doResponseAction {
         backend.getTask()
     }
 
-    suspend fun finishTask(sha256: String) = doResponseAction {
-        backend.finishTask(sha256)
+    suspend fun finishTask(appHash: String) = doResponseAction {
+        backend.finishTask(appHash)
     }
 
     suspend fun uploadDex(dexPayload: DexPayload) = doResponseAction {
-        val (apkHash, payload) = dexPayload
+        val (appHash, payload) = dexPayload
 
         val bytes = SuFileInputStream(payload).buffered().use { it.readBytes() }
         val formData = RequestBody.create(octet_stream, bytes)
             .let { MultipartBody.Part.createFormData("file", "${bytes.size}.dex", it) }
 
-        backend.uploadDex(apkHash, formData)
+        backend.uploadDex(appHash, formData)
     }
 
     suspend fun uploadLog(logUploadRequest: LogUploadRequest) = doResponseAction {
-        val (apkHash, payload) = logUploadRequest
+        val (appHash, payload) = logUploadRequest
 
         val formData = RequestBody.create(octet_stream, payload)
-            .let { MultipartBody.Part.createFormData("file", "$apkHash.log", it) }
+            .let { MultipartBody.Part.createFormData("file", "$appHash.log", it) }
 
-        backend.uploadLog(apkHash, formData)
+        backend.uploadLog(appHash, formData)
     }
 
     private suspend fun <R> doResponseAction(action: suspend () -> Response<R>): R {

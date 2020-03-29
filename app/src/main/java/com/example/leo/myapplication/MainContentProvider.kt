@@ -92,10 +92,10 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
             while (true) {
                 delay(TimeUnit.SECONDS.toMillis(2))
                 runCatching {
-                    val (sha256, status) = BackendService.getTask()
-                    Logger.logError("轮询成功:$sha256")
-                    val apkFile = apkDir.resolve("$sha256.apk")
-                    BackendService.downloadApk(sha256).byteStream().use { `in` ->
+                    val appHash = BackendService.getTask().sha256
+                    Logger.logError("轮询成功:$appHash")
+                    val apkFile = apkDir.resolve("$appHash.apk")
+                    BackendService.downloadApk(appHash).byteStream().use { `in` ->
                         apkFile.outputStream().use { out -> `in`.copyTo(out) }
                     }
                     var packageName: String? = null
@@ -104,16 +104,16 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
                         ExecutorService.installPackage(apkFile.path)
                         Logger.logError(packageName)
                         ExecutorService.monkeyTest(packageName)
-                        uploadDex(packageName, sha256)
+                        uploadDex(packageName, appHash)
                         count++
                     } finally {
-                        val logFile = logDir.resolve("$sha256.log")
-                        val logGzFile = logDir.resolve("$sha256.log.gz")
+                        val logFile = logDir.resolve("$appHash.log")
+                        val logGzFile = logDir.resolve("$appHash.log.gz")
                         if (logFile.exists()) {
                             gzip(logFile, logGzFile)
-                            BackendService.uploadLog(LogUploadRequest(sha256, logGzFile))
+                            BackendService.uploadLog(LogUploadRequest(appHash, logGzFile))
                         }
-                        BackendService.finishTask(sha256)
+                        BackendService.finishTask(appHash)
                         send(packageName!!)
                     }
                 }.onFailure {
