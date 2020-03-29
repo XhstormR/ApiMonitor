@@ -2,12 +2,11 @@ package com.example.leo.myapplication.util
 
 import android.util.Log
 import com.example.leo.myapplication.Const
-import org.json.JSONObject
 
 object Logger {
 
-    fun logHook(map: Map<String, Any>) =
-        Log.i(Const.LOGTAG, JSONObject(map).toString())
+    fun logHook(msg: String) =
+        Log.i(Const.LOGTAG, msg)
 
     fun logError(msg: Any?, tr: Throwable? = null) =
         Log.e(Const.LOGTAG, msg.toString(), tr)

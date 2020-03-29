@@ -17,8 +17,6 @@ object Key {
 
     const val uploadApk = "uploadApk"
 
-    const val uploadDex = "uploadDex"
-
     const val uploadLog = "uploadLog"
 
     const val revokePermission = "revokePermission"

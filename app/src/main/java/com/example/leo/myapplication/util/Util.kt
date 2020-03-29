@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap
 import okio.GzipSink
 import okio.HashingSource
 import okio.Okio
+import org.json.JSONObject
 
 inline fun <reified T> clazz() = T::class.java
 
@@ -28,6 +29,9 @@ fun ByteArray.indexOf(bytes: ByteArray): Int {
     }
     return -1
 }
+
+fun <K, V> Map<K, V>.toJSONObject() =
+    JSONObject(this)
 
 fun <K, V> ConcurrentHashMap.KeySetView<K, V>.putIfAbsent(key: K) =
     map.putIfAbsent(key, mappedValue) == null

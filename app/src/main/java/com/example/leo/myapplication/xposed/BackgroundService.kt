@@ -6,7 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import com.example.leo.myapplication.Const
 import com.example.leo.myapplication.Key
-import com.example.leo.myapplication.model.parcel.DexPayload
+import com.example.leo.myapplication.model.parcel.LogPayload
 import com.example.leo.myapplication.model.parcel.VirusProcess
 import com.example.leo.myapplication.util.currentSystemContext
 
@@ -42,18 +42,9 @@ object BackgroundService {
         result?.getBoolean(Key.revokePermission) ?: false
     }
 
-    fun uploadDex(dexPayload: DexPayload) = doAction {
+    fun uploadLog(logPayload: LogPayload) = doAction {
         val extras = Bundle()
-            .apply { putParcelable(Key.uploadDex, dexPayload) }
-        val result = currentSystemContext()
-            .contentResolver.call(URI, Key.uploadDex, null, extras)
-
-        result?.getBoolean(Key.uploadDex) ?: false
-    }
-
-    fun uploadLog(logPayload: String) = doAction {
-        val extras = Bundle()
-            .apply { putString(Key.uploadLog, logPayload) }
+            .apply { putParcelable(Key.uploadLog, logPayload) }
         val result = currentSystemContext()
             .contentResolver.call(URI, Key.uploadLog, null, extras)
 

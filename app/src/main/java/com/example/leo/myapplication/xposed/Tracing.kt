@@ -1,10 +1,11 @@
 package com.example.leo.myapplication.xposed
 
+import com.example.leo.myapplication.model.parcel.LogPayload
 import com.example.leo.myapplication.util.Logger
 import com.example.leo.myapplication.util.currentApplicationHash
+import com.example.leo.myapplication.util.toJSONObject
 import com.example.leo.myapplication.xposed.leak.LeakChecker
 import de.robv.android.xposed.XC_MethodHook
-import org.json.JSONObject
 
 class Tracing(
     private val packageName: String
@@ -22,7 +23,8 @@ class Tracing(
         map["result"] = ParseGenerator.parseObject(param.result)
         map["this"] = ParseGenerator.parseObject(param.thisObject)
         LeakChecker.parseHook(param)?.let { map["action"] = it }
-        Logger.logHook(map)
-        BackgroundService.uploadLog(JSONObject(map as Map<*, *>).toString())
+        val json = map.toJSONObject().toString()
+        Logger.logHook(json)
+        BackgroundService.uploadLog(LogPayload(applicationHash, json))
     }
 }

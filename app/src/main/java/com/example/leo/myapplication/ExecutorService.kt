@@ -49,4 +49,5 @@ object ExecutorService {
 
     private fun execute(command: String) =
         Shell.su(command).exec()
+            .also { require(it.code == 0) { it.out.joinToString(System.lineSeparator()) } }
 }

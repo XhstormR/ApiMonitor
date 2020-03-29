@@ -4,18 +4,21 @@ import android.Manifest
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.content.SharedPreferences
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import androidx.preference.PreferenceManager
 import com.example.leo.myapplication.client.BackendService
-import com.example.leo.myapplication.model.LogPayload
 import com.example.leo.myapplication.model.parcel.DexPayload
+import com.example.leo.myapplication.model.parcel.LogPayload
 import com.example.leo.myapplication.model.parcel.VirusProcess
+import com.example.leo.myapplication.model.request.LogUploadRequest
 import com.example.leo.myapplication.util.Logger
 import com.example.leo.myapplication.util.clazz
 import com.example.leo.myapplication.util.gzip
+import com.topjohnwu.superuser.io.SuFile
 import java.io.File
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
@@ -27,7 +30,6 @@ import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class MainContentProvider : ContentProvider(), CoroutineScope {
 
@@ -35,13 +37,11 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
 
     private lateinit var apkDir: File
 
+    private lateinit var logDir: File
+
     private lateinit var backupDir: File
 
-    private lateinit var logFile: File
-
-    private lateinit var logGzFile: File
-
-    private val logChannel = Channel<String>(Channel.BUFFERED)
+    private val logChannel = Channel<LogPayload>(Channel.BUFFERED)
 
     private var job = Job()
 
@@ -75,9 +75,8 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
     override fun onCreate(): Boolean {
         val dataDir = File(context!!.applicationInfo.dataDir)
         apkDir = dataDir.resolve("apk").apply { mkdirs() }
+        logDir = dataDir.resolve("log").apply { mkdirs() }
         backupDir = dataDir.resolve("backup").apply { mkdirs() }
-        logFile = dataDir.resolve("trace.log")
-        logGzFile = dataDir.resolve("trace.log.gz")
 
         preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
@@ -101,15 +100,19 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
                     }
                     var packageName: String? = null
                     try {
-                        logFile.delete()
-                        packageName = getApkPackageName(apkFile.path)
+                        packageName = getApplicationInfoByApk(apkFile.path).packageName
                         ExecutorService.installPackage(apkFile.path)
                         Logger.logError(packageName)
                         ExecutorService.monkeyTest(packageName)
+                        uploadDex(packageName, sha256)
                         count++
                     } finally {
-                        gzip(logFile, logGzFile)
-                        BackendService.uploadLog(LogPayload(sha256, logGzFile))
+                        val logFile = logDir.resolve("$sha256.log")
+                        val logGzFile = logDir.resolve("$sha256.log.gz")
+                        if (logFile.exists()) {
+                            gzip(logFile, logGzFile)
+                            BackendService.uploadLog(LogUploadRequest(sha256, logGzFile))
+                        }
                         BackendService.finishTask(sha256)
                         send(packageName!!)
                     }
@@ -134,16 +137,28 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
 
         launch(Dispatchers.IO) {
             logChannel.consumeEach {
-                logFile.appendText(it + System.lineSeparator())
+                logDir.resolve("${it.appHash}.log").appendText(it.payload + System.lineSeparator())
             }
         }
     }
 
-    private fun getApkPackageName(path: String): String {
+    private suspend fun uploadDex(packageName: String, appHash: String) {
+        val applicationInfo = getApplicationInfo(packageName)
+
+        SuFile.open(applicationInfo.dataDir, "dex").walk()
+            .filter { it.isFile }
+            .forEach { BackendService.uploadDex(DexPayload(appHash, it)) }
+    }
+
+    private fun getApplicationInfo(packageName: String): ApplicationInfo {
         val packageManager = context!!.packageManager
-        val packageInfo = packageManager.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES)!!
-        val applicationInfo = packageInfo.applicationInfo
-        return applicationInfo.packageName
+        return packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+    }
+
+    private fun getApplicationInfoByApk(packagePath: String): ApplicationInfo {
+        val packageManager = context!!.packageManager
+        val packageInfo = packageManager.getPackageArchiveInfo(packagePath, PackageManager.GET_ACTIVITIES)!!
+        return packageInfo.applicationInfo
     }
 
     override fun call(method: String, arg: String?, extras: Bundle?): Bundle = when (method) {
@@ -161,14 +176,6 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
                 .run { getParcelable<VirusProcess>(Key.cleanVirusPackage) }!!
             putBoolean(Key.cleanVirusPackage, cleanVirus(virusProcess))
         }
-        Key.uploadDex -> Bundle().apply {
-            extras ?: return Bundle.EMPTY
-            val dexPayload = extras
-                .apply { classLoader = clazz<MainActivity>().classLoader }
-                .run { getParcelable<DexPayload>(Key.uploadDex) }!!
-            runBlocking { BackendService.uploadDex(dexPayload) }
-            putBoolean(Key.uploadDex, true)
-        }
         Key.revokePermission -> Bundle().apply {
             extras ?: return Bundle.EMPTY
             val packageName = extras.getString(Key.revokePermission)!!
@@ -176,7 +183,9 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
         }
         Key.uploadLog -> Bundle().apply {
             extras ?: return Bundle.EMPTY
-            val logPayload = extras.getString(Key.uploadLog)!!
+            val logPayload = extras
+                .apply { classLoader = clazz<MainActivity>().classLoader }
+                .run { getParcelable<LogPayload>(Key.uploadLog) }!!
             putBoolean(Key.uploadLog, logChannel.offer(logPayload))
         }
         else -> Bundle.EMPTY
@@ -196,8 +205,7 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
         ExecutorService.stopActivity(packageName)
         ExecutorService.killProcess(pid)
 
-        val packageManager = context!!.packageManager
-        val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+        val applicationInfo = getApplicationInfo(packageName)
         ExecutorService.backupFile(applicationInfo.sourceDir, backupDir.resolve("$packageName.apk").path)
 
         return ExecutorService.uninstallPackage(packageName).isSuccess

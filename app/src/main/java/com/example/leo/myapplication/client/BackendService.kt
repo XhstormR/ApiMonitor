@@ -1,13 +1,12 @@
 package com.example.leo.myapplication.client
 
-import com.example.leo.myapplication.model.LogPayload
 import com.example.leo.myapplication.model.parcel.DexPayload
+import com.example.leo.myapplication.model.request.LogUploadRequest
 import com.example.leo.myapplication.model.response.Response
 import com.example.leo.myapplication.model.response.TaskResponse
 import com.topjohnwu.superuser.io.SuFileInputStream
 import okhttp3.MediaType
 import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Retrofit
@@ -68,16 +67,12 @@ object BackendService {
         ): Response<Int>
     }
 
-    private val httpClient = OkHttpClient.Builder()
-        .build()
-
     private val backend: Backend
 
     private val octet_stream = MediaType.get("application/octet-stream")
 
     init {
         val retrofit = Retrofit.Builder()
-            .client(httpClient)
             .baseUrl(Backend.API_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -106,8 +101,8 @@ object BackendService {
         backend.uploadDex(apkHash, formData)
     }
 
-    suspend fun uploadLog(logPayload: LogPayload) = doResponseAction {
-        val (apkHash, payload) = logPayload
+    suspend fun uploadLog(logUploadRequest: LogUploadRequest) = doResponseAction {
+        val (apkHash, payload) = logUploadRequest
 
         val formData = RequestBody.create(octet_stream, payload)
             .let { MultipartBody.Part.createFormData("file", "$apkHash.log", it) }

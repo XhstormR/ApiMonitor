@@ -1,10 +1,7 @@
 package com.example.leo.myapplication.xposed.dex
 
 import android.app.AndroidAppHelper
-import com.example.leo.myapplication.model.parcel.DexPayload
-import com.example.leo.myapplication.util.currentApplicationHash
 import com.example.leo.myapplication.util.putIfAbsent
-import com.example.leo.myapplication.xposed.BackgroundService
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedHelpers
 import java.io.File
@@ -13,8 +10,6 @@ import java.util.concurrent.ConcurrentHashMap
 object DexHook : XC_MethodHook() {
 
     private val sizes = ConcurrentHashMap.newKeySet<Int>()
-
-    private val applicationHash = currentApplicationHash()
 
     override fun afterHookedMethod(param: MethodHookParam) {
         val bytes = param.result
@@ -26,7 +21,6 @@ object DexHook : XC_MethodHook() {
             .resolve("$size.dex")
         if (sizes.putIfAbsent(size)) {
             file.writeBytes(bytes)
-            BackgroundService.uploadDex(DexPayload(applicationHash, file))
         }
         // if (!file.exists()) {
         //     file.writeBytes(bytes)
