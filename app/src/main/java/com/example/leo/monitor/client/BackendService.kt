@@ -69,7 +69,7 @@ object BackendService {
 
     private val backend: Backend
 
-    private val octet_stream = MediaType.get("application/octet-stream")
+    private val OCTET_STREAM_TYPE = MediaType.get("application/octet-stream")
 
     init {
         val retrofit = Retrofit.Builder()
@@ -95,8 +95,8 @@ object BackendService {
         val (appHash, payload) = dexPayload
 
         val bytes = SuFileInputStream(payload).buffered().use { it.readBytes() }
-        val formData = RequestBody.create(octet_stream, bytes)
-            .let { MultipartBody.Part.createFormData("file", "${bytes.size}.dex", it) }
+        val formData = RequestBody.create(OCTET_STREAM_TYPE, bytes)
+            .let { MultipartBody.Part.createFormData("file", payload.name, it) }
 
         backend.uploadDex(appHash, formData)
     }
@@ -104,8 +104,8 @@ object BackendService {
     suspend fun uploadLog(logUploadRequest: LogUploadRequest) = doResponseAction {
         val (appHash, payload) = logUploadRequest
 
-        val formData = RequestBody.create(octet_stream, payload)
-            .let { MultipartBody.Part.createFormData("file", "$appHash.log", it) }
+        val formData = RequestBody.create(OCTET_STREAM_TYPE, payload)
+            .let { MultipartBody.Part.createFormData("file", payload.name, it) }
 
         backend.uploadLog(appHash, formData)
     }

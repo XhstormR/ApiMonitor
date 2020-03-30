@@ -1,6 +1,7 @@
 package com.example.leo.monitor
 
 import com.topjohnwu.superuser.Shell
+import java.io.File
 
 object ExecutorService {
 
@@ -32,8 +33,8 @@ object ExecutorService {
     fun revokePackagePermission(packageName: String, permission: String) =
         execute(PACKAGE_REVOKE_PERMISSION.format(packageName, permission))
 
-    fun installPackage(path: String) =
-        execute(PACKAGE_INSTALL.format(path))
+    fun installPackage(packagePath: File) =
+        execute(PACKAGE_INSTALL.format(packagePath))
 
     fun uninstallPackage(packageName: String) =
         execute(PACKAGE_UNINSTALL.format(packageName))

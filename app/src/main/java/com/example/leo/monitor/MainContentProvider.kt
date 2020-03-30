@@ -27,7 +27,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
-import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -42,6 +41,8 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
     private lateinit var backupDir: File
 
     private val logChannel = Channel<LogPayload>(Channel.BUFFERED)
+
+    private val uninstallChannel = Channel<String>()
 
     private var job = Job()
 
@@ -88,36 +89,38 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
     private fun createTimerTask() {
         var count = 0
 
-        val channel = produce(Dispatchers.IO) {
+        launch(Dispatchers.IO) {
             while (true) {
                 delay(TimeUnit.SECONDS.toMillis(2))
-                runCatching {
+                try {
                     val appHash = BackendService.getTask().sha256
                     Logger.logError("轮询成功:$appHash")
-                    val apkFile = apkDir.resolve("$appHash.apk")
-                    BackendService.downloadApk(appHash).byteStream().use { `in` ->
-                        apkFile.outputStream().use { out -> `in`.copyTo(out) }
-                    }
-                    var packageName: String? = null
-                    try {
-                        packageName = getApplicationInfoByApk(apkFile.path).packageName
-                        ExecutorService.installPackage(apkFile.path)
-                        Logger.logError(packageName)
-                        ExecutorService.monkeyTest(packageName)
-                        uploadDex(packageName, appHash)
+
+                    val packageName = try {
+                        val apkFile = downloadApk(appHash)
+                        val applicationInfo = getApplicationInfoByApk(apkFile)
+                        ExecutorService.installPackage(apkFile)
+                        applicationInfo.packageName
+                    } catch (e: Exception) {
+                        Logger.logError("安装失败:${e.message}", e)
                         count++
-                    } finally {
-                        val logFile = logDir.resolve("$appHash.log")
-                        val logGzFile = logDir.resolve("$appHash.log.gz")
-                        if (logFile.exists()) {
-                            gzip(logFile, logGzFile)
-                            BackendService.uploadLog(LogUploadRequest(appHash, logGzFile))
-                        }
                         BackendService.finishTask(appHash)
-                        send(packageName!!)
+                        continue
                     }
-                }.onFailure {
-                    Logger.logError("轮询失败:${it.message}", it)
+
+                    try {
+                        ExecutorService.monkeyTest(packageName)
+                    } catch (e: Exception) {
+                        Logger.logError("测试失败:${e.message}", e)
+                    } finally {
+                        count++
+                        uploadLog(appHash)
+                        uploadDex(appHash, packageName)
+                        BackendService.finishTask(appHash)
+                        uninstallChannel.send(packageName)
+                    }
+                } catch (e: Exception) {
+                    Logger.logError("轮询失败:${e.message}", e)
                 }
             }
         }
@@ -125,12 +128,12 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
         launch(Dispatchers.IO) {
             while (true) {
                 delay(TimeUnit.SECONDS.toMillis(2))
-                Logger.logError("channelclose:${channel.isClosedForReceive},times:$count")
+                Logger.logError("times:$count")
             }
         }
 
         launch(Dispatchers.IO) {
-            channel.consumeEach {
+            uninstallChannel.consumeEach {
                 ExecutorService.uninstallPackage(it)
             }
         }
@@ -142,7 +145,24 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
         }
     }
 
-    private suspend fun uploadDex(packageName: String, appHash: String) {
+    private suspend fun downloadApk(appHash: String): File {
+        val file = apkDir.resolve("$appHash.apk")
+        BackendService.downloadApk(appHash).byteStream().buffered().use { `in` ->
+            file.outputStream().buffered().use { out -> `in`.copyTo(out) }
+        }
+        return file
+    }
+
+    private suspend fun uploadLog(appHash: String) {
+        val logFile = logDir.resolve("$appHash.log")
+        val logGzFile = logDir.resolve("$appHash.log.gz")
+        if (logFile.exists()) {
+            gzip(logFile, logGzFile)
+            BackendService.uploadLog(LogUploadRequest(appHash, logGzFile))
+        }
+    }
+
+    private suspend fun uploadDex(appHash: String, packageName: String) {
         val applicationInfo = getApplicationInfo(packageName)
 
         SuFile.open(applicationInfo.dataDir, "dex").walk()
@@ -155,9 +175,9 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
         return packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
     }
 
-    private fun getApplicationInfoByApk(packagePath: String): ApplicationInfo {
+    private fun getApplicationInfoByApk(packagePath: File): ApplicationInfo {
         val packageManager = context!!.packageManager
-        val packageInfo = packageManager.getPackageArchiveInfo(packagePath, PackageManager.GET_ACTIVITIES)!!
+        val packageInfo = packageManager.getPackageArchiveInfo(packagePath.path, PackageManager.GET_ACTIVITIES)!!
         return packageInfo.applicationInfo
     }
 

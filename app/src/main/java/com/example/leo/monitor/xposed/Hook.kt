@@ -25,6 +25,7 @@ class Hook : IXposedHookLoadPackage {
         ) return
 
         if (lpparam.packageName == "com.topjohnwu.magisk" ||
+            lpparam.packageName == "com.github.shadowsocks" ||
             lpparam.packageName == "de.robv.android.xposed.installer"
         ) return
 
