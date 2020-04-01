@@ -10,7 +10,7 @@ object TelephonyManagerCheckHook : XC_MethodHook() {
             "getImei" -> LeakChecker.addSample(Type.IMEI, result)
             "getDeviceId" -> LeakChecker.addSample(Type.IMEI, result)
             "getLine1Number" -> LeakChecker.addSample(Type.PHONE_NUMBER, result)
-            else -> throw IllegalArgumentException()
+            else -> error("")
         }
     }
 }

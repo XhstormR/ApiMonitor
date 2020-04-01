@@ -11,10 +11,17 @@
 
 -keepclasseswithmembers class com.example.leo.monitor.xposed.Hook
 
--keepclassmembernames class com.example.leo.monitor.xposed.HookConfig {
+#-keepclassmembernames class com.example.leo.monitor.model.** {
+#    <fields>;
+#}
+#
+#-keepclassmembers class com.example.leo.monitor.model.** {
+#    public <methods>;
+#}
+
+-keepclassmembers enum com.example.leo.monitor.model.** {
     <fields>;
 }
 
--keepclassmembernames class com.example.leo.monitor.model.response.* {
-    <fields>;
-}
+# Workaround for https://github.com/square/moshi/issues/1049
+-keep class kotlin.Metadata { *; }

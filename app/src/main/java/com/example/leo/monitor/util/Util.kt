@@ -2,6 +2,7 @@ package com.example.leo.monitor.util
 
 import android.app.AndroidAppHelper
 import android.content.Context
+import com.squareup.moshi.Moshi
 import de.robv.android.xposed.XposedHelpers
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
@@ -59,3 +60,5 @@ fun gzip(input: File, output: File) {
         Okio.buffer(GzipSink(Okio.sink(output))).use { sink -> sink.writeAll(source) }
     }
 }
+
+val moshi: Moshi = Moshi.Builder().build()

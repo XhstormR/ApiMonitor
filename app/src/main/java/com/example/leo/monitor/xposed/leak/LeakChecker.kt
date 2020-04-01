@@ -3,10 +3,10 @@ package com.example.leo.monitor.xposed.leak
 import android.telephony.SmsManager
 import android.telephony.TelephonyManager
 import android.util.Base64
+import com.example.leo.monitor.model.HookConfig
 import com.example.leo.monitor.util.clazz
 import com.example.leo.monitor.util.contains
 import com.example.leo.monitor.util.toHEX
-import com.example.leo.monitor.xposed.HookConfig
 import com.example.leo.monitor.xposed.net.MonitorOutputStream
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam
 import java.io.FileOutputStream
@@ -25,7 +25,7 @@ object LeakChecker {
     fun addSample(type: Type, sample: Any) = when (sample) {
         is String -> addSample(type, sample)
         is ByteArray -> addSample(type, sample)
-        else -> throw IllegalArgumentException()
+        else -> error("")
     }
 
     private fun addSample(type: Type, sample: String) {

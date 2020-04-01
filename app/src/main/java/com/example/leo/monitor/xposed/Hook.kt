@@ -4,12 +4,14 @@ import android.app.AndroidAppHelper
 import android.content.pm.ApplicationInfo
 import com.example.leo.monitor.BuildConfig
 import com.example.leo.monitor.Const
+import com.example.leo.monitor.model.HookConfig
 import com.example.leo.monitor.util.Logger
 import com.example.leo.monitor.util.clazz
+import com.example.leo.monitor.util.moshi
 import com.example.leo.monitor.xposed.dex.DexChecker
 import com.example.leo.monitor.xposed.leak.LeakChecker
 import com.example.leo.monitor.xposed.net.NetChecker
-import com.google.gson.Gson
+import com.squareup.moshi.Types
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XC_MethodReplacement
 import de.robv.android.xposed.XposedBridge
@@ -47,9 +49,9 @@ class Hook : IXposedHookLoadPackage {
 
         val config = BackgroundService.getConfig()
 
-        val hookConfigs = Gson()
-            .fromJson(config, clazz<Array<HookConfig>>())
-            .toMutableSet()
+        val type = Types.newParameterizedType(clazz<Set<*>>(), clazz<HookConfig>())
+        val hookConfigs = moshi.adapter<MutableSet<HookConfig>>(type)
+            .fromJson(config)!!
 
         DexChecker.install(hookConfigs)
 

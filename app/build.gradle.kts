@@ -6,6 +6,7 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("android.extensions")
+    kotlin("kapt")
 }
 
 ktlint {
@@ -65,9 +66,10 @@ dependencies {
     implementation("androidx.preference:preference:1.1.0")
 
     implementation("com.squareup.retrofit2:retrofit:2.8.1")
-    implementation("com.squareup.retrofit2:converter-gson:2.8.1")
+    implementation("com.squareup.retrofit2:converter-moshi:2.8.1")
 
-    implementation("com.google.code.gson:gson:2.8.6")
+    implementation("com.squareup.moshi:moshi:1.9.2")
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.9.2")
 
     implementation("com.github.topjohnwu.libsu:core:2.5.1")
     implementation("com.github.topjohnwu.libsu:io:2.5.1")

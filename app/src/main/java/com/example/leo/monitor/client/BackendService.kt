@@ -10,7 +10,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
 import retrofit2.http.GET
 import retrofit2.http.Multipart
@@ -74,7 +74,7 @@ object BackendService {
     init {
         val retrofit = Retrofit.Builder()
             .baseUrl(Backend.API_URL)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create())
             .build()
 
         backend = retrofit.create()
@@ -110,9 +110,9 @@ object BackendService {
         backend.uploadLog(appHash, formData)
     }
 
-    private suspend fun <R> doResponseAction(action: suspend () -> Response<R>): R {
+    private suspend fun <R : Any> doResponseAction(action: suspend () -> Response<R>): R {
         val (code, message, result) = action()
         check(code == 200) { message }
-        return result
+        return checkNotNull(result)
     }
 }

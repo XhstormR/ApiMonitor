@@ -1,7 +1,7 @@
 package com.example.leo.monitor.xposed.net
 
+import com.example.leo.monitor.model.HookConfig
 import com.example.leo.monitor.util.clazz
-import com.example.leo.monitor.xposed.HookConfig
 import java.net.Socket
 
 object NetChecker {
