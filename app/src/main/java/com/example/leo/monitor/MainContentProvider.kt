@@ -30,6 +30,7 @@ import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+// TODO: Use Service https://developer.android.google.cn/guide/components/bound-services?hl=zh-cn#Messenger
 class MainContentProvider : ContentProvider(), CoroutineScope {
 
     private lateinit var preferences: SharedPreferences
@@ -113,11 +114,15 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
                     } catch (e: Exception) {
                         Logger.logError("测试失败:${e.message}", e)
                     } finally {
-                        count++
-                        uploadLog(appHash)
-                        uploadDex(appHash, packageName)
-                        BackendService.finishTask(appHash)
-                        uninstallChannel.send(packageName)
+                        runCatching {
+                            count++
+                            uploadLog(appHash)
+                            uploadDex(appHash, packageName)
+                            BackendService.finishTask(appHash)
+                            uninstallChannel.send(packageName)
+                        }.onFailure {
+                            uninstallChannel.send(packageName)
+                        }
                     }
                 } catch (e: Exception) {
                     Logger.logError("轮询失败:${e.message}", e)
