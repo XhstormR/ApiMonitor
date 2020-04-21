@@ -112,27 +112,27 @@ object ParseGenerator {
     private fun readNet(param: MethodHookParam): String {
         val inputStream = param.thisObject as MonitorInputStream
 
-        return "recieve_${inputStream.host}_${inputStream.port}"
+        return "recieve_${inputStream.hostAddress}_${inputStream.hostName}_${inputStream.port}"
     }
 
     private fun writeNet(param: MethodHookParam): String {
         val outputStream = param.thisObject as MonitorOutputStream
 
-        return "send_${outputStream.host}_${outputStream.port}"
+        return "send_${outputStream.hostAddress}_${outputStream.hostName}_${outputStream.port}"
     }
 
     private fun connect(param: MethodHookParam): String {
         val socket = param.thisObject as Socket
         if (!socket.isConnected) return "open_unconnected"
 
-        return "open_${socket.inetAddress.hostAddress}_${socket.port}"
+        return "open_${socket.inetAddress.hostAddress}_${socket.inetAddress.hostName}_${socket.port}"
     }
 
     private fun close(param: MethodHookParam): String {
         val socket = param.thisObject as Socket
         if (!socket.isConnected) return "close_unconnected"
 
-        return "close_${socket.inetAddress.hostAddress}_${socket.port}"
+        return "close_${socket.inetAddress.hostAddress}_${socket.inetAddress.hostName}_${socket.port}"
     }
 
     private fun mac(param: MethodHookParam): String {

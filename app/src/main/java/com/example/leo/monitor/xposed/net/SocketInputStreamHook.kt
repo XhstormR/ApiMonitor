@@ -11,6 +11,7 @@ object SocketInputStreamHook : XC_MethodHook() {
 
         param.result = MonitorInputStream(
             socket.inetAddress.hostAddress,
+            socket.inetAddress.hostName,
             socket.port,
             param.result as InputStream
         )

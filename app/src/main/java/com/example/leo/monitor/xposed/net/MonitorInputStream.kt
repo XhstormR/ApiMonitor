@@ -3,7 +3,8 @@ package com.example.leo.monitor.xposed.net
 import java.io.InputStream
 
 class MonitorInputStream(
-    val host: String,
+    val hostAddress: String,
+    val hostName: String,
     val port: Int,
     private val delegate: InputStream
 ) : InputStream() {
