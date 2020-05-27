@@ -49,6 +49,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
     packagingOptions {
         exclude("**/*.kotlin_module")
         exclude("**/*.kotlin_metadata")
@@ -61,17 +64,16 @@ dependencies {
     compileOnly("de.robv.android.xposed:api:82")
 
     implementation(kotlin("stdlib-jdk8", KotlinCompilerVersion.VERSION))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.7")
 
     implementation("androidx.preference:preference:1.1.0")
 
-    implementation("com.squareup.retrofit2:retrofit:2.8.1")
-    implementation("com.squareup.retrofit2:converter-moshi:2.8.1")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
 
     implementation("com.squareup.moshi:moshi:1.9.2")
     kapt("com.squareup.moshi:moshi-kotlin-codegen:1.9.2")
 
-    implementation("com.github.topjohnwu.libsu:core:2.5.1")
     implementation("com.github.topjohnwu.libsu:io:2.5.1")
 }
 
