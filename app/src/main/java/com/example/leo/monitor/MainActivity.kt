@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 
 class MainActivity : AppCompatActivity() {
@@ -18,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
         if (preferences.getLong(Key.assetUpdateTime, -1) != packageInfo.lastUpdateTime) {
             initConfig()
-            preferences.edit().putLong(Key.assetUpdateTime, packageInfo.lastUpdateTime).apply()
+            preferences.edit { putLong(Key.assetUpdateTime, packageInfo.lastUpdateTime) }
         }
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {

@@ -5,8 +5,8 @@ import org.jetbrains.kotlin.config.KotlinCompilerVersion
 plugins {
     id("com.android.application")
     kotlin("android")
-    kotlin("android.extensions")
     kotlin("kapt")
+    id("kotlin-parcelize")
 }
 
 ktlint {
@@ -14,9 +14,9 @@ ktlint {
 }
 
 android {
-    compileSdkVersion(29)
+    compileSdkVersion(30)
     defaultConfig {
-        targetSdkVersion(29)
+        targetSdkVersion(30)
         minSdkVersion(25)
         applicationId = "com.example.leo.monitor"
         versionCode = 1
@@ -64,17 +64,18 @@ dependencies {
     compileOnly("de.robv.android.xposed:api:82")
 
     implementation(kotlin("stdlib-jdk8", KotlinCompilerVersion.VERSION))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.7")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
 
-    implementation("androidx.preference:preference:1.1.0")
+    implementation("androidx.core:core-ktx:1.3.2")
+    implementation("androidx.preference:preference-ktx:1.1.1")
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
 
-    implementation("com.squareup.moshi:moshi:1.9.2")
-    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.9.2")
+    implementation("com.squareup.moshi:moshi:1.11.0")
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.11.0")
 
-    implementation("com.github.topjohnwu.libsu:io:2.5.1")
+    implementation("com.github.topjohnwu.libsu:io:3.0.2")
 }
 
 /*

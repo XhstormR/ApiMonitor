@@ -6,9 +6,11 @@ import java.io.File
 object ExecutorService {
 
     init {
-        Shell.Config.setFlags(Shell.FLAG_REDIRECT_STDERR)
-        Shell.Config.verboseLogging(BuildConfig.DEBUG)
-        Shell.Config.setTimeout(10)
+        Shell.enableVerboseLogging = BuildConfig.DEBUG
+        Shell.Builder.create()
+            .setFlags(Shell.FLAG_REDIRECT_STDERR)
+            .setTimeout(10)
+            .let { Shell.setDefaultBuilder(it) }
     }
 
     private const val PROCESS_KILL = "kill -9 %s"

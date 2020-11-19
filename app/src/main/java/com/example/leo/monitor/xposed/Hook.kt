@@ -21,10 +21,8 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 class Hook : IXposedHookLoadPackage {
 
     override fun handleLoadPackage(lpparam: LoadPackageParam) {
-        if (lpparam.appInfo == null ||
-            (lpparam.appInfo.flags and
-                (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0
-        ) return
+        if (lpparam.appInfo == null) return
+        if ((lpparam.appInfo.flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0) return
 
         if (lpparam.packageName == "com.topjohnwu.magisk" ||
             lpparam.packageName == "com.github.shadowsocks" ||

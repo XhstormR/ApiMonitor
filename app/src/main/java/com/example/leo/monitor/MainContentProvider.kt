@@ -191,8 +191,8 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
             putBoolean(Key.serviceSwitch, preferences.getBoolean(Key.serviceSwitch, false))
         }
         Key.hooks -> Bundle().apply {
-            putString(Key.hooks,
-                context!!.openFileInput(Const.CONFIG_FILENAME).bufferedReader().use { it.readText() })
+            val config = context!!.openFileInput(Const.CONFIG_FILENAME).bufferedReader().use { it.readText() }
+            putString(Key.hooks, config)
         }
         Key.cleanVirusPackage -> Bundle().apply {
             extras ?: return Bundle.EMPTY

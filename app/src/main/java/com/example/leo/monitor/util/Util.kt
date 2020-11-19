@@ -35,7 +35,7 @@ fun <K, V> Map<K, V>.toJSONObject() =
     JSONObject(this)
 
 fun <K, V> ConcurrentHashMap.KeySetView<K, V>.putIfAbsent(key: K) =
-    map.putIfAbsent(key, mappedValue) == null
+    map.putIfAbsent(key, checkNotNull(mappedValue)) == null
 
 fun currentSystemContext() =
     XposedHelpers.findClass("android.app.ActivityThread", null)

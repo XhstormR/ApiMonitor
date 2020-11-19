@@ -20,7 +20,7 @@ import javax.crypto.Mac
 
 object ParseGenerator {
 
-    fun parseHook(param: MethodHookParam) = mutableMapOf(
+    fun parseHook(param: MethodHookParam): MutableMap<String, Any> = mutableMapOf(
         "class" to param.method.declaringClass.name,
         "method" to param.method.name,
         "action" to action(param),
