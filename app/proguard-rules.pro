@@ -22,6 +22,3 @@
 -keepclassmembers enum com.example.leo.monitor.model.** {
     <fields>;
 }
-
-# Workaround for https://github.com/square/moshi/issues/1049
--keep class kotlin.Metadata { *; }
