@@ -1,7 +1,10 @@
 package com.example.leo.monitor.util
 
 import android.app.AndroidAppHelper
+import android.content.ContentResolver
 import android.content.Context
+import android.net.Uri
+import com.example.leo.monitor.Const
 import com.squareup.moshi.Moshi
 import de.robv.android.xposed.XposedHelpers
 import java.io.File
@@ -62,3 +65,8 @@ fun gzip(input: File, output: File) {
 }
 
 val moshi: Moshi = Moshi.Builder().build()
+
+val CP_URI: Uri = Uri.Builder()
+    .scheme(ContentResolver.SCHEME_CONTENT)
+    .authority(Const.AUTHORITY)
+    .build()

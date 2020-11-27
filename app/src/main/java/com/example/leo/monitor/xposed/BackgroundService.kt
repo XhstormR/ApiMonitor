@@ -1,25 +1,19 @@
 package com.example.leo.monitor.xposed
 
-import android.content.ContentResolver
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import com.example.leo.monitor.Const
 import com.example.leo.monitor.Key
 import com.example.leo.monitor.model.parcel.LogPayload
 import com.example.leo.monitor.model.parcel.VirusProcess
+import com.example.leo.monitor.util.CP_URI
 import com.example.leo.monitor.util.currentSystemContext
 
 object BackgroundService {
 
-    private val URI = Uri.Builder()
-        .scheme(ContentResolver.SCHEME_CONTENT)
-        .authority(Const.AUTHORITY)
-        .build()
-
     fun getConfig() = doAction {
         val result = currentSystemContext()
-            .contentResolver.call(URI, Key.hooks, null, null)
+            .contentResolver.call(CP_URI, Key.hooks, null, null)
 
         result?.getString(Key.hooks) ?: ""
     }
@@ -28,7 +22,7 @@ object BackgroundService {
         val extras = Bundle()
             .apply { putParcelable(Key.cleanVirusPackage, virusProcess) }
         val result = currentSystemContext()
-            .contentResolver.call(URI, Key.cleanVirusPackage, null, extras)
+            .contentResolver.call(CP_URI, Key.cleanVirusPackage, null, extras)
 
         result?.getBoolean(Key.cleanVirusPackage) ?: false
     }
@@ -37,7 +31,7 @@ object BackgroundService {
         val extras = Bundle()
             .apply { putString(Key.revokePermission, packageName) }
         val result = currentSystemContext()
-            .contentResolver.call(URI, Key.revokePermission, null, extras)
+            .contentResolver.call(CP_URI, Key.revokePermission, null, extras)
 
         result?.getBoolean(Key.revokePermission) ?: false
     }
@@ -46,16 +40,16 @@ object BackgroundService {
         val extras = Bundle()
             .apply { putParcelable(Key.uploadLog, logPayload) }
         val result = currentSystemContext()
-            .contentResolver.call(URI, Key.uploadLog, null, extras)
+            .contentResolver.call(CP_URI, Key.uploadLog, null, extras)
 
         result?.getBoolean(Key.uploadLog) ?: false
     }
 
     fun isModuleActive() = doAction {
         val result = currentSystemContext()
-            .contentResolver.call(URI, Key.serviceSwitch, null, null)
+            .contentResolver.call(CP_URI, Key.xposedSwitch, null, null)
 
-        result?.getBoolean(Key.serviceSwitch) ?: false
+        result?.getBoolean(Key.xposedSwitch) ?: false
     }
 
     private fun <R> doAction(action: () -> R): R = runCatching {

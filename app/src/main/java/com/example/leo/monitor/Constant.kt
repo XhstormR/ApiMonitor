@@ -25,7 +25,11 @@ object Key {
 
     const val hooks = "hooks"
 
-    const val serviceSwitch = "serviceSwitch"
+    const val xposedSwitch = "xposedSwitch"
+
+    const val backendSwitch = "backendSwitch"
+
+    const val serviceCategory = "serviceCategory"
 
     const val assetUpdateTime = "assetUpdateTime"
 }

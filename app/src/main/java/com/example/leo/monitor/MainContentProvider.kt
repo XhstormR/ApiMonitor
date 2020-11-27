@@ -82,12 +82,12 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
 
         preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
-        createTimerTask()
-
         return true
     }
 
     private fun createTimerTask() {
+        if (job.isActive) return
+        job = Job()
         var count = 0
 
         launch(Dispatchers.IO) {
@@ -187,8 +187,13 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
     }
 
     override fun call(method: String, arg: String?, extras: Bundle?): Bundle = when (method) {
-        Key.serviceSwitch -> Bundle().apply {
-            putBoolean(Key.serviceSwitch, preferences.getBoolean(Key.serviceSwitch, false))
+        Key.xposedSwitch -> Bundle().apply {
+            putBoolean(Key.xposedSwitch, preferences.getBoolean(Key.xposedSwitch, false))
+        }
+        Key.backendSwitch -> Bundle().apply {
+            val enable = preferences.getBoolean(Key.backendSwitch, false)
+            if (enable) createTimerTask()
+            else job.cancel()
         }
         Key.hooks -> Bundle().apply {
             val config = context!!.openFileInput(Const.CONFIG_FILENAME).bufferedReader().use { it.readText() }

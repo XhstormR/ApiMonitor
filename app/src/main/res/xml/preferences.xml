@@ -1,7 +1,20 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <SwitchPreferenceCompat
-        app:key="serviceSwitch"
-        app:title="启用" />
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:key="serviceCategory"
+        android:title="首选项">
+
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="backendSwitch"
+            app:title="后端服务" />
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="xposedSwitch"
+            app:title="Xposed 服务" />
+
+    </PreferenceCategory>
 
 </PreferenceScreen>
