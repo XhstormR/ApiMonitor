@@ -26,8 +26,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 // TODO: Use Service https://developer.android.google.cn/guide/components/bound-services?hl=zh-cn#Messenger
@@ -138,13 +139,13 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
         }
 
         launch(Dispatchers.IO) {
-            uninstallChannel.consumeEach {
+            uninstallChannel.receiveAsFlow().collect {
                 ExecutorService.uninstallPackage(it)
             }
         }
 
         launch(Dispatchers.IO) {
-            logChannel.consumeEach {
+            logChannel.receiveAsFlow().collect {
                 logDir.resolve("${it.appHash}.log").appendText(it.payload + System.lineSeparator())
             }
         }

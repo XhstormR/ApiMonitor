@@ -336,6 +336,14 @@
     "methodName": "setWebViewClient"
   },
   {
+    "className": "android.webkit.WebView",
+    "methodName": "loadUrl"
+  },
+  {
+    "className": "android.webkit.WebView",
+    "methodName": "postUrl"
+  },
+  {
     "className": "android.content.ContextWrapper",
     "methodName": "openFileOutput"
   },
@@ -358,6 +366,50 @@
   {
     "className": "java.net.Socket",
     "methodName": "close"
+  },
+  {
+    "className": "java.net.URLConnection",
+    "methodName": "setRequestProperty"
+  },
+  {
+    "className": "java.net.URLConnection",
+    "methodName": "addRequestProperty"
+  },
+  {
+    "className": "java.net.ServerSocket",
+    "methodName": null
+  },
+  {
+    "className": "java.net.ServerSocket",
+    "methodName": "bind"
+  },
+  {
+    "className": "java.net.InetSocketAddress",
+    "methodName": null
+  },
+  {
+    "className": "java.net.DatagramSocket",
+    "methodName": null
+  },
+  {
+    "className": "java.net.DatagramSocket",
+    "methodName": "createSocket"
+  },
+  {
+    "className": "java.net.DatagramSocket",
+    "methodName": "bind"
+  },
+  {
+    "className": "java.net.DatagramSocket",
+    "methodName": "send"
+  },
+  {
+    "className": "java.nio.channels.SocketChannel",
+    "methodName": "open"
+  },
+  {
+    "className": "android.net.Uri",
+    "methodName": "parse"
   },
   {
     "className": "android.telecom.TelecomManager",

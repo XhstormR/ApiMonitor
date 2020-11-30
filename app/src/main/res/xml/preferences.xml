@@ -9,7 +9,7 @@
         <SwitchPreferenceCompat
             app:iconSpaceReserved="false"
             app:key="backendSwitch"
-            app:title="后端服务" />
+            app:title="Web 服务" />
         <SwitchPreferenceCompat
             app:iconSpaceReserved="false"
             app:key="xposedSwitch"

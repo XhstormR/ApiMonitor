@@ -6,7 +6,7 @@ import de.robv.android.xposed.XC_MethodHook
 @JsonClass(generateAdapter = true)
 data class HookConfig(
     val className: String,
-    val methodName: String?,
+    val methodName: String? = null,
     @Transient
     val callback: XC_MethodHook? = null
 )

@@ -11,16 +11,20 @@ object DexHook : XC_MethodHook() {
 
     private val sizes = ConcurrentHashMap.newKeySet<Int>()
 
+    private val dir by lazy {
+        File(AndroidAppHelper.currentApplicationInfo().dataDir)
+            .resolve("dex").apply { mkdirs() }
+    }
+
     override fun afterHookedMethod(param: MethodHookParam) {
         val bytes = param.result
             ?.let { XposedHelpers.callMethod(it, "getDex") }
             ?.let { XposedHelpers.callMethod(it, "getBytes") as ByteArray } ?: return
         val size = bytes.size
-        val file = File(AndroidAppHelper.currentApplicationInfo().dataDir)
-            .resolve("dex").apply { mkdirs() }
-            .resolve("$size.dex")
         if (sizes.putIfAbsent(size)) {
-            file.writeBytes(bytes)
+            dir
+                .resolve("$size.dex")
+                .writeBytes(bytes)
         }
         // if (!file.exists()) {
         //     file.writeBytes(bytes)

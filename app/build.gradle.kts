@@ -64,7 +64,7 @@ dependencies {
     compileOnly("de.robv.android.xposed:api:82")
 
     implementation(kotlin("stdlib-jdk8", KotlinCompilerVersion.VERSION))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2")
 
     implementation("androidx.core:core-ktx:1.3.2")
     implementation("androidx.preference:preference-ktx:1.1.1")
