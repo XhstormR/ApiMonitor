@@ -11,9 +11,6 @@ object Const {
     const val CONFIG_FILENAME = "hooks.json"
 
     const val LOGTAG = "ApiMonitor"
-
-    const val MSG_DO_FOREGROUND = 1
-    const val KEY_DO_FOREGROUND = "KEY_GET_FOREGROUND_APP"
 }
 
 object Key {

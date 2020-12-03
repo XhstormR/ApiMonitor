@@ -4,8 +4,6 @@ import android.Manifest
 import android.content.ComponentName
 import android.content.ContentProvider
 import android.content.ContentValues
-import android.content.Intent
-import android.content.ServiceConnection
 import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
@@ -13,14 +11,8 @@ import android.database.Cursor
 import android.net.Uri
 import android.net.wifi.WifiManager
 import android.os.Bundle
-import android.os.Handler
-import android.os.IBinder
-import android.os.Looper
-import android.os.Message
-import android.os.Messenger
 import android.os.UserManager
 import android.widget.Toast
-import androidx.core.os.bundleOf
 import androidx.preference.PreferenceManager
 import com.example.leo.monitor.client.BackendService
 import com.example.leo.monitor.model.parcel.DexPayload
@@ -32,7 +24,6 @@ import com.example.leo.monitor.util.clazz
 import com.example.leo.monitor.util.gzip
 import com.example.leo.monitor.util.toId
 import com.topjohnwu.superuser.io.SuFile
-import com.topjohnwu.superuser.ipc.RootService
 import java.io.File
 import java.net.InetAddress
 import java.nio.ByteBuffer
@@ -49,7 +40,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 // TODO: Use Service https://developer.android.google.cn/guide/components/bound-services?hl=zh-cn#Messenger
-class MainContentProvider : ContentProvider(), CoroutineScope, Handler.Callback {
+class MainContentProvider : ContentProvider(), CoroutineScope {
 
     private lateinit var preferences: SharedPreferences
 
@@ -99,8 +90,6 @@ class MainContentProvider : ContentProvider(), CoroutineScope, Handler.Callback 
         backupDir = dataDir.resolve("backup").apply { mkdirs() }
 
         preferences = PreferenceManager.getDefaultSharedPreferences(context)
-
-        bindMyRootService()
 
         return true
     }
@@ -231,15 +220,6 @@ class MainContentProvider : ContentProvider(), CoroutineScope, Handler.Callback 
         return componentName.packageName == packageName
     }
 
-    // Deprecated: RootService 不支持跨用户绑定
-    private fun doForeground(packageName: String) {
-        val message = Message.obtain(null, Const.MSG_DO_FOREGROUND).apply {
-            replyTo = messenger
-            data = bundleOf(Const.KEY_DO_FOREGROUND to packageName)
-        }
-        myRootServiceMessenger!!.send(message)
-    }
-
     private fun getWorkUserId(): Int {
         val userManager = context!!.getSystemService(clazz<UserManager>())
         return userManager.userProfiles
@@ -346,37 +326,5 @@ class MainContentProvider : ContentProvider(), CoroutineScope, Handler.Callback 
 
     override fun insert(uri: Uri, values: ContentValues?): Uri? {
         TODO("not implemented")
-    }
-
-    override fun handleMessage(msg: Message): Boolean {
-        when (msg.what) {
-            Const.MSG_DO_FOREGROUND -> {
-                msg.data.getString(Const.KEY_DO_FOREGROUND)
-                    ?.let { ExecutorService.startActivity(getWorkUserId(), getLaunchComponent(it)) }
-            }
-        }
-        return false
-    }
-
-    private fun bindMyRootService() {
-        if (myRootServiceMessenger == null)
-            RootService.bind(Intent(this.context, clazz<MyRootService>()), myRootServiceConnection)
-    }
-
-    private val messenger = Messenger(Handler(Looper.getMainLooper(), this))
-
-    private var myRootServiceMessenger: Messenger? = null
-
-    private val myRootServiceConnection = object : ServiceConnection {
-
-        override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            Logger.logError("MyRootService: onServiceConnected")
-            myRootServiceMessenger = Messenger(service)
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-            Logger.logError("MyRootService: onServiceDisconnected")
-            myRootServiceMessenger = null
-        }
     }
 }
