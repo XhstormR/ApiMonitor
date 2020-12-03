@@ -76,6 +76,7 @@ dependencies {
     kapt("com.squareup.moshi:moshi-kotlin-codegen:1.11.0")
 
     implementation("com.github.topjohnwu.libsu:io:3.0.2")
+    implementation("com.github.topjohnwu.libsu:service:3.0.2")
 }
 
 /*

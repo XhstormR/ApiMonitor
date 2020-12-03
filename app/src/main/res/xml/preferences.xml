@@ -12,6 +12,10 @@
             app:title="Web 服务" />
         <SwitchPreferenceCompat
             app:iconSpaceReserved="false"
+            app:key="fridaSwitch"
+            app:title="Frida 服务" />
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
             app:key="xposedSwitch"
             app:title="Xposed 服务" />
 

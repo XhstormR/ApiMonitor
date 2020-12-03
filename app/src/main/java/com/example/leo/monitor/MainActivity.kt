@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         contentResolver.call(CP_URI, Key.backendSwitch, null, null)
+        contentResolver.call(CP_URI, Key.fridaSwitch, null, null)
     }
 
     private fun getPackageInfo() =

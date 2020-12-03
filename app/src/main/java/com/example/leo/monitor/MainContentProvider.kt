@@ -1,14 +1,26 @@
 package com.example.leo.monitor
 
 import android.Manifest
+import android.content.ComponentName
 import android.content.ContentProvider
 import android.content.ContentValues
+import android.content.Intent
+import android.content.ServiceConnection
 import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
+import android.net.wifi.WifiManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
+import android.os.Message
+import android.os.Messenger
+import android.os.UserManager
+import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.preference.PreferenceManager
 import com.example.leo.monitor.client.BackendService
 import com.example.leo.monitor.model.parcel.DexPayload
@@ -18,8 +30,13 @@ import com.example.leo.monitor.model.request.LogUploadRequest
 import com.example.leo.monitor.util.Logger
 import com.example.leo.monitor.util.clazz
 import com.example.leo.monitor.util.gzip
+import com.example.leo.monitor.util.toId
 import com.topjohnwu.superuser.io.SuFile
+import com.topjohnwu.superuser.ipc.RootService
 import java.io.File
+import java.net.InetAddress
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
@@ -32,7 +49,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 // TODO: Use Service https://developer.android.google.cn/guide/components/bound-services?hl=zh-cn#Messenger
-class MainContentProvider : ContentProvider(), CoroutineScope {
+class MainContentProvider : ContentProvider(), CoroutineScope, Handler.Callback {
 
     private lateinit var preferences: SharedPreferences
 
@@ -83,12 +100,13 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
 
         preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
+        bindMyRootService()
+
         return true
     }
 
     private fun createTimerTask() {
-        if (job.isActive) return
-        job = Job()
+        if (job.isCompleted) job = Job()
         var count = 0
 
         launch(Dispatchers.IO) {
@@ -101,7 +119,7 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
                     val packageName = try {
                         val apkFile = downloadApk(appHash)
                         val applicationInfo = getApplicationInfoByApk(apkFile)
-                        ExecutorService.installPackage(apkFile)
+                        ExecutorService.installPackage(getWorkUserId(), apkFile)
                         applicationInfo.packageName
                     } catch (e: Exception) {
                         Logger.logError("安装失败:${e.message}", e)
@@ -111,7 +129,18 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
                     }
 
                     try {
-                        ExecutorService.monkeyTest(packageName)
+                        ExecutorService.startActivity(getWorkUserId(), getLaunchComponent(packageName))
+                        delay(TimeUnit.SECONDS.toMillis(2))
+                        val topCheck = launch(Dispatchers.IO) {
+                            while (true) {
+                                delay(TimeUnit.SECONDS.toMillis(1))
+                                if (!isForeground(packageName)) {
+                                    ExecutorService.startActivity(getWorkUserId(), getLaunchComponent(packageName))
+                                }
+                            }
+                        }
+                        ExecutorService.monkeyTest()
+                        topCheck.cancel()
                     } catch (e: Exception) {
                         Logger.logError("测试失败:${e.message}", e)
                     } finally {
@@ -119,6 +148,7 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
                             count++
                             uploadLog(appHash)
                             uploadDex(appHash, packageName)
+                            ExecutorService.stopActivity(getWorkUserId(), packageName)
                             BackendService.finishTask(appHash)
                             uninstallChannel.send(packageName)
                         }.onFailure {
@@ -140,7 +170,7 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
 
         launch(Dispatchers.IO) {
             uninstallChannel.receiveAsFlow().collect {
-                ExecutorService.uninstallPackage(it)
+                ExecutorService.uninstallPackage(getWorkUserId(), it)
             }
         }
 
@@ -187,9 +217,54 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
         return packageInfo.applicationInfo
     }
 
+    private fun getLaunchComponent(packageName: String): String {
+        val packageManager = context!!.packageManager
+        return packageManager
+            .getLaunchIntentForPackage(packageName)!!
+            .component!!
+            .flattenToShortString()
+    }
+
+    private fun isForeground(packageName: String): Boolean {
+        val topComponent = ExecutorService.getTopComponent()
+        val componentName = ComponentName.unflattenFromString(topComponent) ?: return false
+        return componentName.packageName == packageName
+    }
+
+    // Deprecated: RootService 不支持跨用户绑定
+    private fun doForeground(packageName: String) {
+        val message = Message.obtain(null, Const.MSG_DO_FOREGROUND).apply {
+            replyTo = messenger
+            data = bundleOf(Const.KEY_DO_FOREGROUND to packageName)
+        }
+        myRootServiceMessenger!!.send(message)
+    }
+
+    private fun getWorkUserId(): Int {
+        val userManager = context!!.getSystemService(clazz<UserManager>())
+        return userManager.userProfiles
+            .map { it.toId() }
+            .single { it != 0 }
+    }
+
+    private fun getIp(): String {
+        val wifiManager = context!!.getSystemService(clazz<WifiManager>())
+        return ByteBuffer.allocate(4)
+            .order(ByteOrder.nativeOrder())
+            .putInt(wifiManager.connectionInfo.ipAddress)
+            .array()
+            .let { InetAddress.getByAddress(it).hostAddress }
+    }
+
     override fun call(method: String, arg: String?, extras: Bundle?): Bundle = when (method) {
         Key.xposedSwitch -> Bundle().apply {
             putBoolean(Key.xposedSwitch, preferences.getBoolean(Key.xposedSwitch, false))
+        }
+        Key.fridaSwitch -> Bundle().apply {
+            Toast.makeText(context, getIp(), Toast.LENGTH_LONG).show()
+            val enable = preferences.getBoolean(Key.fridaSwitch, false)
+            if (enable) ExecutorService.startFrida()
+            else ExecutorService.stopFrida()
         }
         Key.backendSwitch -> Bundle().apply {
             val enable = preferences.getBoolean(Key.backendSwitch, false)
@@ -224,7 +299,7 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
 
     private fun revokePackagePermission(packageName: String): Boolean {
         DISABLE_PERMISSION.forEach {
-            Logger.logError(ExecutorService.revokePackagePermission(packageName, it))
+            Logger.logError(ExecutorService.revokePackagePermission(getWorkUserId(), packageName, it))
         }
         return true
     }
@@ -233,13 +308,13 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
         val pid = virusProcess.pid
         val packageName = virusProcess.packageName
 
-        ExecutorService.stopActivity(packageName)
+        ExecutorService.stopActivity(getWorkUserId(), packageName)
         ExecutorService.killProcess(pid)
 
         val applicationInfo = getApplicationInfo(packageName)
         ExecutorService.backupFile(applicationInfo.sourceDir, backupDir.resolve("$packageName.apk").path)
 
-        return ExecutorService.uninstallPackage(packageName).isSuccess
+        return ExecutorService.uninstallPackage(getWorkUserId(), packageName).isSuccess
     }
 
     override fun query(
@@ -271,5 +346,37 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
 
     override fun insert(uri: Uri, values: ContentValues?): Uri? {
         TODO("not implemented")
+    }
+
+    override fun handleMessage(msg: Message): Boolean {
+        when (msg.what) {
+            Const.MSG_DO_FOREGROUND -> {
+                msg.data.getString(Const.KEY_DO_FOREGROUND)
+                    ?.let { ExecutorService.startActivity(getWorkUserId(), getLaunchComponent(it)) }
+            }
+        }
+        return false
+    }
+
+    private fun bindMyRootService() {
+        if (myRootServiceMessenger == null)
+            RootService.bind(Intent(this.context, clazz<MyRootService>()), myRootServiceConnection)
+    }
+
+    private val messenger = Messenger(Handler(Looper.getMainLooper(), this))
+
+    private var myRootServiceMessenger: Messenger? = null
+
+    private val myRootServiceConnection = object : ServiceConnection {
+
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            Logger.logError("MyRootService: onServiceConnected")
+            myRootServiceMessenger = Messenger(service)
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+            Logger.logError("MyRootService: onServiceDisconnected")
+            myRootServiceMessenger = null
+        }
     }
 }

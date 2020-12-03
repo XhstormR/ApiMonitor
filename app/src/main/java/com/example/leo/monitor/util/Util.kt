@@ -4,6 +4,7 @@ import android.app.AndroidAppHelper
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
+import android.os.UserHandle
 import com.example.leo.monitor.Const
 import com.squareup.moshi.Moshi
 import de.robv.android.xposed.XposedHelpers
@@ -33,6 +34,8 @@ fun ByteArray.indexOf(bytes: ByteArray): Int {
     }
     return -1
 }
+
+fun UserHandle.toId() = hashCode()
 
 fun <K, V> Map<K, V>.toJSONObject() =
     JSONObject(this)
