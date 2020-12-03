@@ -94,7 +94,7 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
         return true
     }
 
-    private fun createTimerTask() {
+    private fun startBackendTask() {
         if (job.isCompleted) job = Job()
         var count = 0
 
@@ -248,7 +248,7 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
         }
         Key.backendSwitch -> Bundle().apply {
             val enable = preferences.getBoolean(Key.backendSwitch, false)
-            if (enable) createTimerTask()
+            if (enable) startBackendTask()
             else job.cancel()
         }
         Key.hooks -> Bundle().apply {

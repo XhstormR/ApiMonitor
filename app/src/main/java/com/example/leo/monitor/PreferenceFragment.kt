@@ -32,6 +32,11 @@ class PreferenceFragment : PreferenceFragmentCompat() {
             }
         }
 
+        if (isModuleActive()) {
+            requireContext().contentResolver.call(CP_URI, Key.backendSwitch, null, null)
+            requireContext().contentResolver.call(CP_URI, Key.fridaSwitch, null, null)
+        }
+
         val msg = if (isModuleActive()) "模块已激活" else "模块未激活"
         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
     }

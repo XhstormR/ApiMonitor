@@ -31,7 +31,7 @@ class Hook : IXposedHookLoadPackage {
 
         if (lpparam.packageName == BuildConfig.APPLICATION_ID) {
             XposedHelpers.findAndHookMethod(
-                Const.SELF_Fragment,
+                Const.SELF_FRAGMENT,
                 lpparam.classLoader,
                 "isModuleActive",
                 XC_MethodReplacement.returnConstant(true)

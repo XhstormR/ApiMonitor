@@ -26,9 +26,6 @@ object DexHook : XC_MethodHook() {
                 .resolve("$size.dex")
                 .writeBytes(bytes)
         }
-        // if (!file.exists()) {
-        //     file.writeBytes(bytes)
-        // }
     }
 }
 

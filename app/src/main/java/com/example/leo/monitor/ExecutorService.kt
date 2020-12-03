@@ -13,23 +13,35 @@ object ExecutorService {
             .let { Shell.setDefaultBuilder(it) }
     }
 
-    private const val PROCESS_KILL = "kill -9 %s"
+    private const val PROCESS_KILL =
+        """kill -9 %s"""
 
-    private const val ACTIVITY_START = "am start --user %d %s"
-    private const val ACTIVITY_STOP = "am force-stop --user %d %s"
-    private const val ACTIVITY_TOP = "dumpsys activity activities | grep mFocusedActivity | cut -d' ' -f 6"
+    private const val ACTIVITY_START =
+        """am start --user %d %s"""
+    private const val ACTIVITY_STOP =
+        """am force-stop --user %d %s"""
+    private const val ACTIVITY_TOP =
+        """dumpsys activity activities | grep mFocusedActivity | cut -d' ' -f 6"""
 
-    private const val PACKAGE_REVOKE_PERMISSION = "pm revoke --user %d %s %s"
-    private const val PACKAGE_INSTALL = "pm install -r --user %d %s"
-    private const val PACKAGE_UNINSTALL = "pm uninstall --user %d %s"
+    private const val PACKAGE_REVOKE_PERMISSION =
+        """pm revoke --user %d %s %s"""
+    private const val PACKAGE_INSTALL =
+        """pm install -r --user %d %s"""
+    private const val PACKAGE_UNINSTALL =
+        """pm uninstall --user %d %s"""
 
-    private const val FILE_BACKUP = "cp -a %s %s"
-    private const val FILE_REMOVE = "rm -rf %s"
+    private const val FILE_BACKUP =
+        """cp -a %s %s"""
+    private const val FILE_REMOVE =
+        """rm -rf %s"""
 
-    private const val MONKEY_TEST = "monkey --kill-process-after-error --pct-touch 100 --throttle 500 500"
+    private const val MONKEY_TEST =
+        """monkey --kill-process-after-error --pct-touch 100 --throttle 500 500"""
 
-    private const val FRIDA_SERVER_START = "/data/local/tmp/frida-server -D -l 0.0.0.0"
-    private const val FRIDA_SERVER_PID = "pidof frida-server"
+    private const val FRIDA_SERVER_START =
+        """/data/local/tmp/frida-server -D -l 0.0.0.0"""
+    private const val FRIDA_SERVER_PID =
+        """pidof frida-server"""
 
     fun killProcess(pid: Int) =
         execute(PROCESS_KILL.format(pid))

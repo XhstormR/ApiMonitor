@@ -2,7 +2,7 @@ package com.example.leo.monitor
 
 object Const {
 
-    const val SELF_Fragment = "${BuildConfig.APPLICATION_ID}.PreferenceFragment"
+    const val SELF_FRAGMENT = "${BuildConfig.APPLICATION_ID}.PreferenceFragment"
 
     const val AUTHORITY = "${BuildConfig.APPLICATION_ID}.CP"
 
