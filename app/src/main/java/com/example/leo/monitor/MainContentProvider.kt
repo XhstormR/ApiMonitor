@@ -56,6 +56,8 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
 
     private var job = Job()
 
+    private var backendJob: Job? = null
+
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + job
 
@@ -95,10 +97,11 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
     }
 
     private fun startBackendTask() {
+        if (backendJob?.isActive == true) return
         if (job.isCompleted) job = Job()
         var count = 0
 
-        launch(Dispatchers.IO) {
+        backendJob = launch(Dispatchers.IO) {
             while (true) {
                 delay(TimeUnit.SECONDS.toMillis(2))
                 try {
