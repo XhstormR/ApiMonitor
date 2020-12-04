@@ -17,6 +17,7 @@ import java.io.FileOutputStream
 import java.net.Socket
 import javax.crypto.Cipher
 import javax.crypto.Mac
+import okio.ByteString
 
 object ParseGenerator {
 
@@ -153,9 +154,14 @@ object ParseGenerator {
         return "${action}_${cipher.algorithm}"
     }
 
+    private fun parseByteArray(obj: ByteArray) =
+        if (obj.size > DEFAULT_BUFFER_SIZE) obj.toString()
+        else ByteString.of(obj, 0, obj.size).base64()
+
     fun parseObject(obj: Any?): Any = when (obj) {
         is List<*> -> obj.map { parseObject(it) }
         is Array<*> -> obj.map { parseObject(it) }
+        is ByteArray -> parseByteArray(obj)
         else -> obj.toString()
     }
 }

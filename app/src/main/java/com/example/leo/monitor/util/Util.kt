@@ -10,6 +10,7 @@ import com.squareup.moshi.Moshi
 import de.robv.android.xposed.XposedHelpers
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
+import okio.ByteString
 import okio.GzipSink
 import okio.HashingSource
 import okio.Okio
@@ -17,8 +18,8 @@ import org.json.JSONObject
 
 inline fun <reified T> clazz() = T::class.java
 
-fun ByteArray.toHEX() =
-    this.joinToString("") { String.format("%02x", it) }
+fun ByteArray.toHEX(): String =
+    ByteString.of(this, 0, this.size).hex()
 
 fun ByteArray.contains(bytes: ByteArray) =
     this.indexOf(bytes) != -1
@@ -52,14 +53,6 @@ fun currentApplicationHash(sourceApk: File = File(AndroidAppHelper.currentApplic
     HashingSource.sha256(Okio.source(sourceApk))
         .apply { Okio.buffer(this).use { it.readAll(Okio.blackhole()) } }
         .hash().hex()
-
-fun byte2Hex(bytes: ByteArray) = StringBuilder(bytes.size * 2)
-    .apply {
-        for (byte in bytes) {
-            append("%02x".format(byte))
-        }
-    }
-    .toString()
 
 fun gzip(input: File, output: File) {
     Okio.buffer(Okio.source(input)).use { source ->

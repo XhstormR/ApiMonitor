@@ -21,16 +21,16 @@ object SHA256 {
             }
         }
 
-        return byte2Hex(digest.digest())
+        return digest.digest().toHEX()
     }
 
     fun hash(input: String): String {
         val digest = digestProvider()
-        return byte2Hex(digest.digest(input.toByteArray()))
+        return digest.digest(input.toByteArray()).toHEX()
     }
 
     fun hash(input: ByteArray): String {
         val digest = digestProvider()
-        return byte2Hex(digest.digest(input))
+        return digest.digest(input).toHEX()
     }
 }
