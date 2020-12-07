@@ -13,6 +13,7 @@ import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.os.UserManager
 import android.widget.Toast
+import androidx.core.content.getSystemService
 import androidx.preference.PreferenceManager
 import com.example.leo.monitor.client.BackendService
 import com.example.leo.monitor.model.parcel.DexPayload
@@ -86,7 +87,7 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
     }
 
     override fun onCreate(): Boolean {
-        val dataDir = File(context!!.applicationInfo.dataDir)
+        val dataDir = File(requireContext().applicationInfo.dataDir)
         apkDir = dataDir.resolve("apk").apply { mkdirs() }
         logDir = dataDir.resolve("log").apply { mkdirs() }
         backupDir = dataDir.resolve("backup").apply { mkdirs() }
@@ -173,6 +174,10 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
         }
     }
 
+    private fun stopBackendTask() {
+        job.cancel()
+    }
+
     private suspend fun downloadApk(appHash: String): File {
         val file = apkDir.resolve("$appHash.apk")
         BackendService.downloadApk(appHash).byteStream().buffered().use { `in` ->
@@ -199,18 +204,18 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
     }
 
     private fun getApplicationInfo(packageName: String): ApplicationInfo {
-        val packageManager = context!!.packageManager
+        val packageManager = requireContext().packageManager
         return packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
     }
 
     private fun getApplicationInfoByApk(packagePath: File): ApplicationInfo {
-        val packageManager = context!!.packageManager
+        val packageManager = requireContext().packageManager
         val packageInfo = packageManager.getPackageArchiveInfo(packagePath.path, PackageManager.GET_ACTIVITIES)!!
         return packageInfo.applicationInfo
     }
 
     private fun getLaunchComponent(packageName: String): String {
-        val packageManager = context!!.packageManager
+        val packageManager = requireContext().packageManager
         return packageManager
             .getLaunchIntentForPackage(packageName)!!
             .component!!
@@ -224,14 +229,14 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
     }
 
     private fun getWorkUserId(): Int {
-        val userManager = context!!.getSystemService(clazz<UserManager>())
+        val userManager = requireContext().getSystemService<UserManager>()!!
         return userManager.userProfiles
             .map { it.toId() }
             .single { it != 0 }
     }
 
     private fun getIp(): String {
-        val wifiManager = context!!.getSystemService(clazz<WifiManager>())
+        val wifiManager = requireContext().getSystemService<WifiManager>()!!
         return ByteBuffer.allocate(4)
             .order(ByteOrder.nativeOrder())
             .putInt(wifiManager.connectionInfo.ipAddress)
@@ -252,10 +257,10 @@ class MainContentProvider : ContentProvider(), CoroutineScope {
         Key.backendSwitch -> Bundle().apply {
             val enable = preferences.getBoolean(Key.backendSwitch, false)
             if (enable) startBackendTask()
-            else job.cancel()
+            else stopBackendTask()
         }
         Key.hooks -> Bundle().apply {
-            val config = context!!.openFileInput(Const.CONFIG_FILENAME).bufferedReader().use { it.readText() }
+            val config = requireContext().openFileInput(Const.CONFIG_FILENAME).bufferedReader().use { it.readText() }
             putString(Key.hooks, config)
         }
         Key.cleanVirusPackage -> Bundle().apply {

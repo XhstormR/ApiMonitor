@@ -272,6 +272,10 @@
     "methodName": "close"
   },
   {
+    "className": "libcore.io.IoBridge",
+    "methodName": "connect"
+  },
+  {
     "className": "android.app.ActivityManager",
     "methodName": "getRunningAppProcesses"
   },
