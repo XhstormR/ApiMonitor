@@ -64,7 +64,7 @@ dependencies {
     compileOnly("de.robv.android.xposed:api:82")
 
     implementation(kotlin("stdlib-jdk8", KotlinCompilerVersion.VERSION))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3")
 
     implementation("androidx.core:core-ktx:1.3.2")
     implementation("androidx.preference:preference-ktx:1.1.1")
@@ -75,7 +75,7 @@ dependencies {
     implementation("com.squareup.moshi:moshi:1.11.0")
     kapt("com.squareup.moshi:moshi-kotlin-codegen:1.11.0")
 
-    implementation("com.github.topjohnwu.libsu:io:3.0.2")
+    implementation("com.github.topjohnwu.libsu:io:3.1.1")
 }
 
 /*

@@ -94,7 +94,7 @@ object BackendService {
     suspend fun uploadDex(dexPayload: DexPayload) = doResponseAction {
         val (appHash, payload) = dexPayload
 
-        val bytes = SuFileInputStream(payload).buffered().use { it.readBytes() }
+        val bytes = SuFileInputStream.open(payload).buffered().use { it.readBytes() }
         val formData = RequestBody.create(OCTET_STREAM_TYPE, bytes)
             .let { MultipartBody.Part.createFormData("file", payload.name, it) }
 
